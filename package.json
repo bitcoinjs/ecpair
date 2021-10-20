@@ -1,5 +1,5 @@
 {
-  "name": "bitcoinjs-ecpair",
+  "name": "ecpair",
   "version": "1.0.0",
   "description": "Client-side Bitcoin JavaScript library ECPair",
   "main": "./src/ecpair.js",
