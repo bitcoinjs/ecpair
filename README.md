@@ -1,9 +1,5 @@
 # ecpair
-![Github CI](https://github.com/bitcoinjs/ecpair/actions/workflows/main_ci.yml/badge.svg)
-
-[![NPM](https://img.shields.io/npm/v/ecpair.svg)](https://www.npmjs.org/package/ecpair)
-
-[![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
+[![Github CI](https://github.com/bitcoinjs/ecpair/actions/workflows/main_ci.yml/badge.svg)](https://github.com/bitcoinjs/ecpair/actions/workflows/main_ci.yml) [![NPM](https://img.shields.io/npm/v/ecpair.svg)](https://www.npmjs.org/package/ecpair) [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
 
 A library for managing SECP256k1 keypairs written in TypeScript with transpiled JavaScript committed to git.
 
