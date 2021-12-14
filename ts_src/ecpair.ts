@@ -50,14 +50,18 @@ export interface ECPairAPI {
 }
 
 export interface TinySecp256k1Interface {
-  isPoint(p: Buffer): boolean;
-  pointCompress(p: Buffer, compressed?: boolean): Buffer;
-  isPrivate(d: Buffer): boolean;
-  pointFromScalar(d?: Buffer, compressed?: boolean): Buffer | null;
+  isPoint(p: Uint8Array): boolean;
+  pointCompress(p: Uint8Array, compressed?: boolean): Uint8Array;
+  isPrivate(d: Uint8Array): boolean;
+  pointFromScalar(d?: Uint8Array, compressed?: boolean): Uint8Array;
 
-  sign(h: Buffer, d: Buffer): Buffer;
-  signWithEntropy(h: Buffer, d: Buffer, e?: Buffer): Buffer;
-  verify(h: Buffer, Q: Buffer, signature: Buffer, strict?: boolean): boolean;
+  sign(h: Uint8Array, d: Uint8Array, e?: Uint8Array): Uint8Array;
+  verify(
+    h: Uint8Array,
+    Q: Uint8Array,
+    signature: Uint8Array,
+    strict?: boolean,
+  ): boolean;
 }
 
 export function ECPairFactory(ecc: TinySecp256k1Interface): ECPairAPI {
@@ -147,7 +151,8 @@ export function ECPairFactory(ecc: TinySecp256k1Interface): ECPairAPI {
         options.compressed === undefined ? true : options.compressed;
       this.network = options.network || networks.bitcoin;
 
-      if (__Q !== undefined) this.__Q = ecc.pointCompress(__Q, this.compressed);
+      if (__Q !== undefined)
+        this.__Q = Buffer.from(ecc.pointCompress(__Q, this.compressed));
     }
 
     get privateKey(): Buffer | undefined {
@@ -156,7 +161,7 @@ export function ECPairFactory(ecc: TinySecp256k1Interface): ECPairAPI {
 
     get publicKey(): Buffer {
       if (!this.__Q)
-        this.__Q = ecc.pointFromScalar(this.__D, this.compressed) as Buffer;
+        this.__Q = Buffer.from(ecc.pointFromScalar(this.__D, this.compressed));
       return this.__Q;
     }
 
@@ -169,7 +174,7 @@ export function ECPairFactory(ecc: TinySecp256k1Interface): ECPairAPI {
       if (!this.__D) throw new Error('Missing private key');
       if (lowR === undefined) lowR = this.lowR;
       if (lowR === false) {
-        return ecc.sign(hash, this.__D);
+        return Buffer.from(ecc.sign(hash, this.__D));
       } else {
         let sig = ecc.sign(hash, this.__D);
         const extraData = Buffer.alloc(32, 0);
@@ -179,9 +184,9 @@ export function ECPairFactory(ecc: TinySecp256k1Interface): ECPairAPI {
         while (sig[0] > 0x7f) {
           counter++;
           extraData.writeUIntLE(counter, 0, 6);
-          sig = ecc.signWithEntropy(hash, this.__D, extraData);
+          sig = ecc.sign(hash, this.__D, extraData);
         }
-        return sig;
+        return Buffer.from(sig);
       }
     }
 

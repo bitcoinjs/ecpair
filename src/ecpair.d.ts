@@ -35,12 +35,11 @@ export interface ECPairAPI {
     makeRandom(options?: ECPairOptions): ECPairInterface;
 }
 export interface TinySecp256k1Interface {
-    isPoint(p: Buffer): boolean;
-    pointCompress(p: Buffer, compressed?: boolean): Buffer;
-    isPrivate(d: Buffer): boolean;
-    pointFromScalar(d?: Buffer, compressed?: boolean): Buffer | null;
-    sign(h: Buffer, d: Buffer): Buffer;
-    signWithEntropy(h: Buffer, d: Buffer, e?: Buffer): Buffer;
-    verify(h: Buffer, Q: Buffer, signature: Buffer, strict?: boolean): boolean;
+    isPoint(p: Uint8Array): boolean;
+    pointCompress(p: Uint8Array, compressed?: boolean): Uint8Array;
+    isPrivate(d: Uint8Array): boolean;
+    pointFromScalar(d?: Uint8Array, compressed?: boolean): Uint8Array;
+    sign(h: Uint8Array, d: Uint8Array, e?: Uint8Array): Uint8Array;
+    verify(h: Uint8Array, Q: Uint8Array, signature: Uint8Array, strict?: boolean): boolean;
 }
 export declare function ECPairFactory(ecc: TinySecp256k1Interface): ECPairAPI;

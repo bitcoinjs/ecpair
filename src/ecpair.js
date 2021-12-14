@@ -74,13 +74,15 @@ function ECPairFactory(ecc) {
       this.compressed =
         options.compressed === undefined ? true : options.compressed;
       this.network = options.network || networks.bitcoin;
-      if (__Q !== undefined) this.__Q = ecc.pointCompress(__Q, this.compressed);
+      if (__Q !== undefined)
+        this.__Q = Buffer.from(ecc.pointCompress(__Q, this.compressed));
     }
     get privateKey() {
       return this.__D;
     }
     get publicKey() {
-      if (!this.__Q) this.__Q = ecc.pointFromScalar(this.__D, this.compressed);
+      if (!this.__Q)
+        this.__Q = Buffer.from(ecc.pointFromScalar(this.__D, this.compressed));
       return this.__Q;
     }
     toWIF() {
@@ -91,7 +93,7 @@ function ECPairFactory(ecc) {
       if (!this.__D) throw new Error('Missing private key');
       if (lowR === undefined) lowR = this.lowR;
       if (lowR === false) {
-        return ecc.sign(hash, this.__D);
+        return Buffer.from(ecc.sign(hash, this.__D));
       } else {
         let sig = ecc.sign(hash, this.__D);
         const extraData = Buffer.alloc(32, 0);
@@ -101,9 +103,9 @@ function ECPairFactory(ecc) {
         while (sig[0] > 0x7f) {
           counter++;
           extraData.writeUIntLE(counter, 0, 6);
-          sig = ecc.signWithEntropy(hash, this.__D, extraData);
+          sig = ecc.sign(hash, this.__D, extraData);
         }
-        return sig;
+        return Buffer.from(sig);
       }
     }
     verify(hash, signature) {
