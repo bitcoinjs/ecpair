@@ -27,21 +27,20 @@ export interface ECPairInterface extends Signer {
     toWIF(): string;
     verify(hash: Buffer, signature: Buffer): boolean;
 }
-export declare class ECPair implements ECPairInterface {
-    private __D?;
-    private __Q?;
-    static isPoint(maybePoint: any): boolean;
-    static fromPrivateKey(buffer: Buffer, options?: ECPairOptions): ECPair;
-    static fromPublicKey(buffer: Buffer, options?: ECPairOptions): ECPair;
-    static fromWIF(wifString: string, network?: Network | Network[]): ECPair;
-    static makeRandom(options?: ECPairOptions): ECPair;
-    compressed: boolean;
-    network: Network;
-    lowR: boolean;
-    protected constructor(__D?: Buffer | undefined, __Q?: Buffer | undefined, options?: ECPairOptions);
-    get privateKey(): Buffer | undefined;
-    get publicKey(): Buffer;
-    toWIF(): string;
-    sign(hash: Buffer, lowR?: boolean): Buffer;
-    verify(hash: Buffer, signature: Buffer): boolean;
+export interface ECPairAPI {
+    isPoint(maybePoint: any): boolean;
+    fromPrivateKey(buffer: Buffer, options?: ECPairOptions): ECPairInterface;
+    fromPublicKey(buffer: Buffer, options?: ECPairOptions): ECPairInterface;
+    fromWIF(wifString: string, network?: Network | Network[]): ECPairInterface;
+    makeRandom(options?: ECPairOptions): ECPairInterface;
 }
+export interface TinySecp256k1Interface {
+    isPoint(p: Buffer): boolean;
+    pointCompress(p: Buffer, compressed?: boolean): Buffer;
+    isPrivate(d: Buffer): boolean;
+    pointFromScalar(d?: Buffer, compressed?: boolean): Buffer | null;
+    sign(h: Buffer, d: Buffer): Buffer;
+    signWithEntropy(h: Buffer, d: Buffer, e?: Buffer): Buffer;
+    verify(h: Buffer, Q: Buffer, signature: Buffer, strict?: boolean): boolean;
+}
+export declare function ECPairFactory(ecc: TinySecp256k1Interface): ECPairAPI;

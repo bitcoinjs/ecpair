@@ -5,8 +5,6 @@ import * as randomBytes from 'randombytes';
 import * as wif from 'wif';
 export { networks };
 
-const ecc = require('tiny-secp256k1');
-
 const isOptions = types.typeforce.maybe(
   types.typeforce.compile({
     compressed: types.maybe(types.Boolean),
@@ -43,12 +41,34 @@ export interface ECPairInterface extends Signer {
   verify(hash: Buffer, signature: Buffer): boolean;
 }
 
-export class ECPair implements ECPairInterface {
-  static isPoint(maybePoint: any): boolean {
+export interface ECPairAPI {
+  isPoint(maybePoint: any): boolean;
+  fromPrivateKey(buffer: Buffer, options?: ECPairOptions): ECPairInterface;
+  fromPublicKey(buffer: Buffer, options?: ECPairOptions): ECPairInterface;
+  fromWIF(wifString: string, network?: Network | Network[]): ECPairInterface;
+  makeRandom(options?: ECPairOptions): ECPairInterface;
+}
+
+export interface TinySecp256k1Interface {
+  isPoint(p: Buffer): boolean;
+  pointCompress(p: Buffer, compressed?: boolean): Buffer;
+  isPrivate(d: Buffer): boolean;
+  pointFromScalar(d?: Buffer, compressed?: boolean): Buffer | null;
+
+  sign(h: Buffer, d: Buffer): Buffer;
+  signWithEntropy(h: Buffer, d: Buffer, e?: Buffer): Buffer;
+  verify(h: Buffer, Q: Buffer, signature: Buffer, strict?: boolean): boolean;
+}
+
+export function ECPairFactory(ecc: TinySecp256k1Interface): ECPairAPI {
+  function isPoint(maybePoint: any): boolean {
     return ecc.isPoint(maybePoint);
   }
 
-  static fromPrivateKey(buffer: Buffer, options?: ECPairOptions): ECPair {
+  function fromPrivateKey(
+    buffer: Buffer,
+    options?: ECPairOptions,
+  ): ECPairInterface {
     types.typeforce(types.Buffer256bit, buffer);
     if (!ecc.isPrivate(buffer))
       throw new TypeError('Private key not in range [1, n)');
@@ -57,13 +77,19 @@ export class ECPair implements ECPairInterface {
     return new ECPair(buffer, undefined, options);
   }
 
-  static fromPublicKey(buffer: Buffer, options?: ECPairOptions): ECPair {
+  function fromPublicKey(
+    buffer: Buffer,
+    options?: ECPairOptions,
+  ): ECPairInterface {
     types.typeforce(ecc.isPoint, buffer);
     types.typeforce(isOptions, options);
     return new ECPair(undefined, buffer, options);
   }
 
-  static fromWIF(wifString: string, network?: Network | Network[]): ECPair {
+  function fromWIF(
+    wifString: string,
+    network?: Network | Network[],
+  ): ECPairInterface {
     const decoded = wif.decode(wifString);
     const version = decoded.version;
 
@@ -85,13 +111,13 @@ export class ECPair implements ECPairInterface {
         throw new Error('Invalid network version');
     }
 
-    return this.fromPrivateKey(decoded.privateKey, {
+    return fromPrivateKey(decoded.privateKey, {
       compressed: decoded.compressed,
       network: network as Network,
     });
   }
 
-  static makeRandom(options?: ECPairOptions): ECPair {
+  function makeRandom(options?: ECPairOptions): ECPairInterface {
     types.typeforce(isOptions, options);
     if (options === undefined) options = {};
     const rng = options.rng || randomBytes;
@@ -102,63 +128,73 @@ export class ECPair implements ECPairInterface {
       types.typeforce(types.Buffer256bit, d);
     } while (!ecc.isPrivate(d));
 
-    return this.fromPrivateKey(d, options);
+    return fromPrivateKey(d, options);
   }
 
-  compressed: boolean;
-  network: Network;
-  lowR: boolean;
+  class ECPair implements ECPairInterface {
+    compressed: boolean;
+    network: Network;
+    lowR: boolean;
 
-  protected constructor(
-    private __D?: Buffer,
-    private __Q?: Buffer,
-    options?: ECPairOptions,
-  ) {
-    this.lowR = false;
-    if (options === undefined) options = {};
-    this.compressed =
-      options.compressed === undefined ? true : options.compressed;
-    this.network = options.network || networks.bitcoin;
+    constructor(
+      private __D?: Buffer,
+      private __Q?: Buffer,
+      options?: ECPairOptions,
+    ) {
+      this.lowR = false;
+      if (options === undefined) options = {};
+      this.compressed =
+        options.compressed === undefined ? true : options.compressed;
+      this.network = options.network || networks.bitcoin;
 
-    if (__Q !== undefined) this.__Q = ecc.pointCompress(__Q, this.compressed);
-  }
+      if (__Q !== undefined) this.__Q = ecc.pointCompress(__Q, this.compressed);
+    }
 
-  get privateKey(): Buffer | undefined {
-    return this.__D;
-  }
+    get privateKey(): Buffer | undefined {
+      return this.__D;
+    }
 
-  get publicKey(): Buffer {
-    if (!this.__Q)
-      this.__Q = ecc.pointFromScalar(this.__D, this.compressed) as Buffer;
-    return this.__Q;
-  }
+    get publicKey(): Buffer {
+      if (!this.__Q)
+        this.__Q = ecc.pointFromScalar(this.__D, this.compressed) as Buffer;
+      return this.__Q;
+    }
 
-  toWIF(): string {
-    if (!this.__D) throw new Error('Missing private key');
-    return wif.encode(this.network.wif, this.__D, this.compressed);
-  }
+    toWIF(): string {
+      if (!this.__D) throw new Error('Missing private key');
+      return wif.encode(this.network.wif, this.__D, this.compressed);
+    }
 
-  sign(hash: Buffer, lowR?: boolean): Buffer {
-    if (!this.__D) throw new Error('Missing private key');
-    if (lowR === undefined) lowR = this.lowR;
-    if (lowR === false) {
-      return ecc.sign(hash, this.__D);
-    } else {
-      let sig = ecc.sign(hash, this.__D);
-      const extraData = Buffer.alloc(32, 0);
-      let counter = 0;
-      // if first try is lowR, skip the loop
-      // for second try and on, add extra entropy counting up
-      while (sig[0] > 0x7f) {
-        counter++;
-        extraData.writeUIntLE(counter, 0, 6);
-        sig = ecc.signWithEntropy(hash, this.__D, extraData);
+    sign(hash: Buffer, lowR?: boolean): Buffer {
+      if (!this.__D) throw new Error('Missing private key');
+      if (lowR === undefined) lowR = this.lowR;
+      if (lowR === false) {
+        return ecc.sign(hash, this.__D);
+      } else {
+        let sig = ecc.sign(hash, this.__D);
+        const extraData = Buffer.alloc(32, 0);
+        let counter = 0;
+        // if first try is lowR, skip the loop
+        // for second try and on, add extra entropy counting up
+        while (sig[0] > 0x7f) {
+          counter++;
+          extraData.writeUIntLE(counter, 0, 6);
+          sig = ecc.signWithEntropy(hash, this.__D, extraData);
+        }
+        return sig;
       }
-      return sig;
+    }
+
+    verify(hash: Buffer, signature: Buffer): boolean {
+      return ecc.verify(hash, this.publicKey, signature);
     }
   }
 
-  verify(hash: Buffer, signature: Buffer): boolean {
-    return ecc.verify(hash, this.publicKey, signature);
-  }
+  return {
+    isPoint,
+    fromPrivateKey,
+    fromPublicKey,
+    fromWIF,
+    makeRandom,
+  };
 }

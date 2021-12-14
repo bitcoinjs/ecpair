@@ -1,10 +1,12 @@
 import * as assert from 'assert';
 import { beforeEach, describe, it } from 'mocha';
 import * as proxyquire from 'proxyquire';
-import { ECPair, ECPairInterface, networks as NETWORKS } from '..';
+import { ECPairFactory, ECPairInterface, networks as NETWORKS } from '..';
 import * as fixtures from './fixtures/ecpair.json';
 const hoodwink = require('hoodwink');
 const tinysecp = require('tiny-secp256k1');
+
+const ECPair = ECPairFactory(tinysecp);
 
 const NETWORKS_LIST = Object.values(NETWORKS);
 const ZERO = Buffer.alloc(32, 0);
@@ -168,7 +170,7 @@ describe('ECPair', () => {
         };
         const ProxiedECPair = proxyquire('../src/ecpair', stub);
 
-        const keyPair = ProxiedECPair.ECPair.makeRandom();
+        const keyPair = ProxiedECPair.ECPairFactory(tinysecp).makeRandom();
         assert.strictEqual(keyPair.toWIF(), exWIF);
       });
     });
