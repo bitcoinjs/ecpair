@@ -22,6 +22,7 @@ export interface Signer {
   publicKey: Buffer;
   network?: any;
   sign(hash: Buffer, lowR?: boolean): Buffer;
+  signSchnorr(hash: Buffer): Buffer;
   getPublicKey?(): Buffer;
 }
 
@@ -29,6 +30,7 @@ export interface SignerAsync {
   publicKey: Buffer;
   network?: any;
   sign(hash: Buffer, lowR?: boolean): Promise<Buffer>;
+  signSchnorr(hash: Buffer): Promise<Buffer>;
   getPublicKey?(): Buffer;
 }
 
@@ -39,6 +41,7 @@ export interface ECPairInterface extends Signer {
   privateKey?: Buffer;
   toWIF(): string;
   verify(hash: Buffer, signature: Buffer): boolean;
+  verifySchnorr(hash: Buffer, signature: Buffer): boolean;
 }
 
 export interface ECPairAPI {
@@ -56,12 +59,15 @@ export interface TinySecp256k1Interface {
   pointFromScalar(d?: Uint8Array, compressed?: boolean): Uint8Array;
 
   sign(h: Uint8Array, d: Uint8Array, e?: Uint8Array): Uint8Array;
+  signSchnorr?(h: Uint8Array, d: Uint8Array, e?: Uint8Array): Uint8Array;
+
   verify(
     h: Uint8Array,
     Q: Uint8Array,
     signature: Uint8Array,
     strict?: boolean,
   ): boolean;
+  verifySchnorr?(h: Uint8Array, Q: Uint8Array, signature: Uint8Array): boolean;
 }
 
 export function ECPairFactory(ecc: TinySecp256k1Interface): ECPairAPI {
@@ -190,8 +196,21 @@ export function ECPairFactory(ecc: TinySecp256k1Interface): ECPairAPI {
       }
     }
 
+    signSchnorr(hash: Buffer): Buffer {
+      if (!this.privateKey) throw new Error('Missing private key');
+      if (!ecc.signSchnorr)
+        throw new Error('signSchnorr not supported by ecc library');
+      return Buffer.from(ecc.signSchnorr(hash, this.privateKey));
+    }
+
     verify(hash: Buffer, signature: Buffer): boolean {
       return ecc.verify(hash, this.publicKey, signature);
+    }
+
+    verifySchnorr(hash: Buffer, signature: Buffer): boolean {
+      if (!ecc.verifySchnorr)
+        throw new Error('verifySchnorr not supported by ecc library');
+      return ecc.verifySchnorr(hash, this.publicKey.subarray(1, 33), signature);
     }
   }
 

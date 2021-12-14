@@ -108,8 +108,19 @@ function ECPairFactory(ecc) {
         return Buffer.from(sig);
       }
     }
+    signSchnorr(hash) {
+      if (!this.privateKey) throw new Error('Missing private key');
+      if (!ecc.signSchnorr)
+        throw new Error('signSchnorr not supported by ecc library');
+      return Buffer.from(ecc.signSchnorr(hash, this.privateKey));
+    }
     verify(hash, signature) {
       return ecc.verify(hash, this.publicKey, signature);
+    }
+    verifySchnorr(hash, signature) {
+      if (!ecc.verifySchnorr)
+        throw new Error('verifySchnorr not supported by ecc library');
+      return ecc.verifySchnorr(hash, this.publicKey.subarray(1, 33), signature);
     }
   }
   return {

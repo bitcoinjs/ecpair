@@ -155,6 +155,16 @@ describe('ECPair', () => {
         keyPair.toWIF();
       }, /Missing private key/);
     });
+    it('throws if from public key only', () => {
+      assert.throws(() => {
+        const publicKey = Buffer.from(
+          '0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798',
+          'hex',
+        );
+        const keyPair = ECPair.fromPublicKey(publicKey);
+        keyPair.toWIF();
+      }, /Missing private key/);
+    });
   });
 
   describe('makeRandom', () => {
@@ -288,6 +298,59 @@ describe('ECPair', () => {
       });
     });
 
+    describe('schnorr signing', () => {
+      it('creates signature', () => {
+        const keyPair = ECPair.fromPrivateKey(ONE, {
+          compressed: false,
+        });
+        const hash = Buffer.alloc(32, 2);
+        let schnorrsig = Buffer.from(
+          '4bc68cbd7c0b769b2dff262e9971756da7ab78402ed6f710c3788ce815e9c06a011bab7a527e33c6a1df0dad5ed05a04b8f3be656d8578502fef07f8215d37db',
+          'hex',
+        );
+
+        assert.deepStrictEqual(
+          keyPair.signSchnorr(hash).toString('hex'),
+          schnorrsig.toString('hex'),
+        );
+      });
+
+      it(
+        'wraps tinysecp.signSchnorr',
+        hoodwink(function (this: any): void {
+          this.mock(
+            tinysecp,
+            'signSchnorr',
+            (h: any) => {
+              assert.strictEqual(h, hash);
+              return signature;
+            },
+            1,
+          );
+
+          assert.deepStrictEqual(keyPair.signSchnorr(hash), signature);
+        }),
+      );
+
+      it('throws if no private key is found', () => {
+        delete (keyPair as any).__D;
+
+        assert.throws(() => {
+          keyPair.signSchnorr(hash);
+        }, /Missing private key/);
+      });
+
+      it('throws if signSchnorr() not found', () => {
+        assert.throws(() => {
+          keyPair = ECPairFactory({
+            ...tinysecp,
+            signSchnorr: null,
+          }).makeRandom();
+          keyPair.signSchnorr(hash);
+        }, /signSchnorr not supported by ecc library/);
+      });
+    });
+
     describe('verify', () => {
       it(
         'wraps tinysecp.verify',
@@ -308,7 +371,52 @@ describe('ECPair', () => {
         }),
       );
     });
+
+    describe('schnorr verify', () => {
+      it('checks signature', () => {
+        const keyPair = ECPair.fromPrivateKey(ONE, {
+          compressed: false,
+        });
+        const hash = Buffer.alloc(32, 2);
+        let schnorrsig = Buffer.from(
+          '4bc68cbd7c0b769b2dff262e9971756da7ab78402ed6f710c3788ce815e9c06a011bab7a527e33c6a1df0dad5ed05a04b8f3be656d8578502fef07f8215d37db',
+          'hex',
+        );
+
+        assert.strictEqual(keyPair.verifySchnorr(hash, schnorrsig), true);
+      });
+
+      it(
+        'wraps tinysecp.verifySchnorr',
+        hoodwink(function (this: any): void {
+          this.mock(
+            tinysecp,
+            'verifySchnorr',
+            (h: any, q: any, s: any) => {
+              assert.strictEqual(h, hash);
+              assert.deepStrictEqual(q, keyPair.publicKey.subarray(1, 33));
+              assert.strictEqual(s, signature);
+              return true;
+            },
+            1,
+          );
+
+          assert.strictEqual(keyPair.verifySchnorr(hash, signature), true);
+        }),
+      );
+
+      it('throws if verifySchnorr() not found', () => {
+        assert.throws(() => {
+          keyPair = ECPairFactory({
+            ...tinysecp,
+            verifySchnorr: null,
+          }).makeRandom();
+          keyPair.verifySchnorr(hash, signature);
+        }, /verifySchnorr not supported by ecc library/);
+      });
+    });
   });
+
   describe('optional low R signing', () => {
     const sig = Buffer.from(
       '95a6619140fca3366f1d3b013b0367c4f86e39508a50fdce' +

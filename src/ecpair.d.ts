@@ -11,12 +11,14 @@ export interface Signer {
     publicKey: Buffer;
     network?: any;
     sign(hash: Buffer, lowR?: boolean): Buffer;
+    signSchnorr(hash: Buffer): Buffer;
     getPublicKey?(): Buffer;
 }
 export interface SignerAsync {
     publicKey: Buffer;
     network?: any;
     sign(hash: Buffer, lowR?: boolean): Promise<Buffer>;
+    signSchnorr(hash: Buffer): Promise<Buffer>;
     getPublicKey?(): Buffer;
 }
 export interface ECPairInterface extends Signer {
@@ -26,6 +28,7 @@ export interface ECPairInterface extends Signer {
     privateKey?: Buffer;
     toWIF(): string;
     verify(hash: Buffer, signature: Buffer): boolean;
+    verifySchnorr(hash: Buffer, signature: Buffer): boolean;
 }
 export interface ECPairAPI {
     isPoint(maybePoint: any): boolean;
@@ -40,6 +43,8 @@ export interface TinySecp256k1Interface {
     isPrivate(d: Uint8Array): boolean;
     pointFromScalar(d?: Uint8Array, compressed?: boolean): Uint8Array;
     sign(h: Uint8Array, d: Uint8Array, e?: Uint8Array): Uint8Array;
+    signSchnorr?(h: Uint8Array, d: Uint8Array, e?: Uint8Array): Uint8Array;
     verify(h: Uint8Array, Q: Uint8Array, signature: Uint8Array, strict?: boolean): boolean;
+    verifySchnorr?(h: Uint8Array, Q: Uint8Array, signature: Uint8Array): boolean;
 }
 export declare function ECPairFactory(ecc: TinySecp256k1Interface): ECPairAPI;
