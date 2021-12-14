@@ -3,6 +3,7 @@ import * as networks from './networks';
 import * as types from './types';
 import * as randomBytes from 'randombytes';
 import * as wif from 'wif';
+import { testEcc } from './testecc';
 export { networks };
 
 const isOptions = types.typeforce.maybe(
@@ -71,6 +72,7 @@ export interface TinySecp256k1Interface {
 }
 
 export function ECPairFactory(ecc: TinySecp256k1Interface): ECPairAPI {
+  testEcc(ecc);
   function isPoint(maybePoint: any): boolean {
     return ecc.isPoint(maybePoint);
   }

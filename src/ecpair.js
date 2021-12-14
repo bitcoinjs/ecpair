@@ -6,6 +6,7 @@ exports.networks = networks;
 const types = require('./types');
 const randomBytes = require('randombytes');
 const wif = require('wif');
+const testecc_1 = require('./testecc');
 const isOptions = types.typeforce.maybe(
   types.typeforce.compile({
     compressed: types.maybe(types.Boolean),
@@ -13,6 +14,7 @@ const isOptions = types.typeforce.maybe(
   }),
 );
 function ECPairFactory(ecc) {
+  (0, testecc_1.testEcc)(ecc);
   function isPoint(maybePoint) {
     return ecc.isPoint(maybePoint);
   }
