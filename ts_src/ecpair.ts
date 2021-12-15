@@ -31,7 +31,6 @@ export interface SignerAsync {
   publicKey: Buffer;
   network?: any;
   sign(hash: Buffer, lowR?: boolean): Promise<Buffer>;
-  signSchnorr(hash: Buffer): Promise<Buffer>;
   getPublicKey?(): Buffer;
 }
 
