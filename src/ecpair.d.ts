@@ -11,7 +11,6 @@ export interface Signer {
     publicKey: Buffer;
     network?: any;
     sign(hash: Buffer, lowR?: boolean): Buffer;
-    signSchnorr(hash: Buffer): Buffer;
     getPublicKey?(): Buffer;
 }
 export interface SignerAsync {
@@ -28,6 +27,7 @@ export interface ECPairInterface extends Signer {
     toWIF(): string;
     verify(hash: Buffer, signature: Buffer): boolean;
     verifySchnorr(hash: Buffer, signature: Buffer): boolean;
+    signSchnorr(hash: Buffer): Buffer;
 }
 export interface ECPairAPI {
     isPoint(maybePoint: any): boolean;
