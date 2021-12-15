@@ -1,6 +1,6 @@
 {
   "name": "ecpair",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "description": "Client-side Bitcoin JavaScript library ECPair",
   "main": "./src/ecpair.js",
   "types": "./src/ecpair.d.ts",
@@ -47,9 +47,9 @@
     "src"
   ],
   "dependencies": {
-    "randombytes": "^2.0.1",
-    "typeforce": "^1.11.3",
-    "wif": "^2.0.1"
+    "randombytes": "^2.1.0",
+    "typeforce": "^1.18.0",
+    "wif": "^2.0.6"
   },
   "devDependencies": {
     "@types/mocha": "^5.2.7",
