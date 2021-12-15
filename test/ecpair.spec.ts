@@ -300,17 +300,17 @@ describe('ECPair', () => {
 
     describe('schnorr signing', () => {
       it('creates signature', () => {
-        const keyPair = ECPair.fromPrivateKey(ONE, {
+        const kP = ECPair.fromPrivateKey(ONE, {
           compressed: false,
         });
-        const hash = Buffer.alloc(32, 2);
-        let schnorrsig = Buffer.from(
+        const h = Buffer.alloc(32, 2);
+        const schnorrsig = Buffer.from(
           '4bc68cbd7c0b769b2dff262e9971756da7ab78402ed6f710c3788ce815e9c06a011bab7a527e33c6a1df0dad5ed05a04b8f3be656d8578502fef07f8215d37db',
           'hex',
         );
 
         assert.deepStrictEqual(
-          keyPair.signSchnorr(hash).toString('hex'),
+          kP.signSchnorr(h).toString('hex'),
           schnorrsig.toString('hex'),
         );
       });
@@ -374,16 +374,16 @@ describe('ECPair', () => {
 
     describe('schnorr verify', () => {
       it('checks signature', () => {
-        const keyPair = ECPair.fromPrivateKey(ONE, {
+        const kP = ECPair.fromPrivateKey(ONE, {
           compressed: false,
         });
-        const hash = Buffer.alloc(32, 2);
-        let schnorrsig = Buffer.from(
+        const h = Buffer.alloc(32, 2);
+        const schnorrsig = Buffer.from(
           '4bc68cbd7c0b769b2dff262e9971756da7ab78402ed6f710c3788ce815e9c06a011bab7a527e33c6a1df0dad5ed05a04b8f3be656d8578502fef07f8215d37db',
           'hex',
         );
 
-        assert.strictEqual(keyPair.verifySchnorr(hash, schnorrsig), true);
+        assert.strictEqual(kP.verifySchnorr(h, schnorrsig), true);
       });
 
       it(
