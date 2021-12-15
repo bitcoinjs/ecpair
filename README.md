@@ -8,10 +8,16 @@ A library for managing SECP256k1 keypairs written in TypeScript with transpiled 
 TypeScript
 
 ``` typescript
-import { Signer, SignerAsync, ECPairInterface, ECPair } from 'ecpair';
+import { Signer, SignerAsync, ECPairInterface, ECPairFactory, TinySecp256k1Interface } from 'ecpair';
 import * as crypto from 'crypto';
+
+// You need to provide the ECC library. The ECC library must implement 
+// all the methods of the `TinySecp256k1Interface` interface.
+const tinysecp = require('tiny-secp256k1');
+const ECPair: ECPairAPI = ECPairFactory(tinysecp);
+
 // You don't need to explicitly write ECPairInterface, but just to show
-// that ECPair implements the interface this example includes it.
+// that the keyPair implements the interface this example includes it.
 
 // From WIF
 const keyPair1: ECPairInterface = ECPair.fromWIF('KynD8ZKdViVo5W82oyxvE18BbG6nZPVQ8Td8hYbwU94RmyUALUik');
