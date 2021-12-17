@@ -3,7 +3,7 @@
   "version": "2.0.1",
   "description": "Client-side Bitcoin JavaScript library ECPair",
   "main": "./src/index.js",
-  "types": "./src/ecpair.d.ts",
+  "types": "./src/index.d.ts",
   "engines": {
     "node": ">=8.0.0"
   },
