@@ -56,7 +56,7 @@ export interface TinySecp256k1Interface {
   isPoint(p: Uint8Array): boolean;
   pointCompress(p: Uint8Array, compressed?: boolean): Uint8Array;
   isPrivate(d: Uint8Array): boolean;
-  pointFromScalar(d?: Uint8Array, compressed?: boolean): Uint8Array;
+  pointFromScalar(d: Uint8Array, compressed?: boolean): Uint8Array | null;
 
   sign(h: Uint8Array, d: Uint8Array, e?: Uint8Array): Uint8Array;
   signSchnorr?(h: Uint8Array, d: Uint8Array, e?: Uint8Array): Uint8Array;
@@ -167,8 +167,15 @@ export function ECPairFactory(ecc: TinySecp256k1Interface): ECPairAPI {
     }
 
     get publicKey(): Buffer {
-      if (!this.__Q)
-        this.__Q = Buffer.from(ecc.pointFromScalar(this.__D, this.compressed));
+      if (!this.__Q) {
+        // @ts-ignore: it is not possible for both `__Q` and `__D` to be `undefined` at the same time.
+        // The factory methods guard for this.
+        const p = ecc.pointFromScalar(this.__D, this.compressed);
+        // @ts-ignore: it is not possible for `p` to be null.
+        // `fromPrivateKey()` checks that `__D` is a valid scalar.
+        this.__Q = Buffer.from(p);
+      }
+
       return this.__Q;
     }
 

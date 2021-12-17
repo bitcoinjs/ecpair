@@ -40,7 +40,7 @@ export interface TinySecp256k1Interface {
     isPoint(p: Uint8Array): boolean;
     pointCompress(p: Uint8Array, compressed?: boolean): Uint8Array;
     isPrivate(d: Uint8Array): boolean;
-    pointFromScalar(d?: Uint8Array, compressed?: boolean): Uint8Array;
+    pointFromScalar(d: Uint8Array, compressed?: boolean): Uint8Array | null;
     sign(h: Uint8Array, d: Uint8Array, e?: Uint8Array): Uint8Array;
     signSchnorr?(h: Uint8Array, d: Uint8Array, e?: Uint8Array): Uint8Array;
     verify(h: Uint8Array, Q: Uint8Array, signature: Uint8Array, strict?: boolean): boolean;
