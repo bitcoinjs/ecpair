@@ -6,4 +6,5 @@ export {
   ECPairAPI,
   ECPairInterface,
   TinySecp256k1Interface,
+  networks,
 } from './ecpair';
