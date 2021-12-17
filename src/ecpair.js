@@ -83,8 +83,14 @@ function ECPairFactory(ecc) {
       return this.__D;
     }
     get publicKey() {
-      if (!this.__Q)
-        this.__Q = Buffer.from(ecc.pointFromScalar(this.__D, this.compressed));
+      if (!this.__Q) {
+        // It is not possible for both `__Q` and `__D` to be `undefined` at the same time.
+        // The factory methods guard for this.
+        const p = ecc.pointFromScalar(this.__D, this.compressed);
+        // It is not possible for `p` to be null.
+        // `fromPrivateKey()` checks that `__D` is a valid scalar.
+        this.__Q = Buffer.from(p);
+      }
       return this.__Q;
     }
     toWIF() {
