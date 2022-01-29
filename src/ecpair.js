@@ -116,11 +116,21 @@ function ECPairFactory(ecc) {
         return Buffer.from(sig);
       }
     }
-    signSchnorr(hash) {
+    signSchnorr(hash, tweakHash, e) {
       if (!this.privateKey) throw new Error('Missing private key');
       if (!ecc.signSchnorr)
         throw new Error('signSchnorr not supported by ecc library');
-      return Buffer.from(ecc.signSchnorr(hash, this.privateKey));
+      if (!tweakHash)
+        return Buffer.from(ecc.signSchnorr(hash, this.privateKey, e));
+      const privateKey =
+        this.publicKey[0] === 2
+          ? this.privateKey
+          : ecc.privateNegate(this.privateKey);
+      const tweakedPrivateKey = ecc.privateAdd(privateKey, tweakHash);
+      if (!tweakedPrivateKey) {
+        throw new Error('Invalid tweaked private key!');
+      }
+      return Buffer.from(ecc.signSchnorr(hash, tweakedPrivateKey, e));
     }
     verify(hash, signature) {
       return ecc.verify(hash, this.publicKey, signature);

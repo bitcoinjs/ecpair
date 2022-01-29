@@ -42,6 +42,65 @@ export function testEcc(ecc: TinySecp256k1Interface): void {
       h('fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364142'),
     ),
   );
+  // 1 + 0 == 1
+  assert(
+    Buffer.from(
+      ecc.privateAdd(
+        h('0000000000000000000000000000000000000000000000000000000000000001'),
+        h('0000000000000000000000000000000000000000000000000000000000000000'),
+      )!,
+    ).equals(
+      h('0000000000000000000000000000000000000000000000000000000000000001'),
+    ),
+  );
+  // -3 + 3 == 0
+  assert(
+    ecc.privateAdd(
+      h('fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd036413e'),
+      h('0000000000000000000000000000000000000000000000000000000000000003'),
+    ) === null,
+  );
+  assert(
+    Buffer.from(
+      ecc.privateAdd(
+        h('e211078564db65c3ce7704f08262b1f38f1ef412ad15b5ac2d76657a63b2c500'),
+        h('b51fbb69051255d1becbd683de5848242a89c229348dd72896a87ada94ae8665'),
+      )!,
+    ).equals(
+      h('9730c2ee69edbb958d42db7460bafa18fef9d955325aec99044c81c8282b0a24'),
+    ),
+  );
+
+  assert(
+    Buffer.from(
+      ecc.privateNegate(
+        h('0000000000000000000000000000000000000000000000000000000000000001'),
+      )!,
+    ).equals(
+      h('fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364140'),
+    ),
+  );
+
+  assert(
+    Buffer.from(
+      ecc.privateNegate(
+        h('fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd036413e'),
+      )!,
+    ).equals(
+      h('0000000000000000000000000000000000000000000000000000000000000003'),
+    ),
+  );
+
+  assert(
+    Buffer.from(
+      ecc.privateNegate(
+        h('b1121e4088a66a28f5b6b0f5844943ecd9f610196d7bb83b25214b60452c09af'),
+      )!,
+    ).equals(
+      h('4eede1bf775995d70a494f0a7bb6bc11e0b8cccd41cce8009ab1132c8b0a3792'),
+    ),
+  );
+
   assert(
     Buffer.from(
       ecc.pointCompress(

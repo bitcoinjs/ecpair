@@ -41,7 +41,7 @@ export interface ECPairInterface extends Signer {
   toWIF(): string;
   verify(hash: Buffer, signature: Buffer): boolean;
   verifySchnorr(hash: Buffer, signature: Buffer): boolean;
-  signSchnorr(hash: Buffer): Buffer;
+  signSchnorr(hash: Buffer, teakHash?: Buffer, extraEntropy?: Buffer): Buffer;
 }
 
 export interface ECPairAPI {
@@ -55,8 +55,11 @@ export interface ECPairAPI {
 export interface TinySecp256k1Interface {
   isPoint(p: Uint8Array): boolean;
   pointCompress(p: Uint8Array, compressed?: boolean): Uint8Array;
-  isPrivate(d: Uint8Array): boolean;
   pointFromScalar(d: Uint8Array, compressed?: boolean): Uint8Array | null;
+
+  isPrivate(d: Uint8Array): boolean;
+  privateAdd(d: Uint8Array, tweak: Uint8Array): Uint8Array | null;
+  privateNegate(d: Uint8Array): Uint8Array;
 
   sign(h: Uint8Array, d: Uint8Array, e?: Uint8Array): Uint8Array;
   signSchnorr?(h: Uint8Array, d: Uint8Array, e?: Uint8Array): Uint8Array;
@@ -204,11 +207,23 @@ export function ECPairFactory(ecc: TinySecp256k1Interface): ECPairAPI {
       }
     }
 
-    signSchnorr(hash: Buffer): Buffer {
+    signSchnorr(hash: Buffer, tweakHash?: Buffer, e?: Buffer): Buffer {
       if (!this.privateKey) throw new Error('Missing private key');
       if (!ecc.signSchnorr)
         throw new Error('signSchnorr not supported by ecc library');
-      return Buffer.from(ecc.signSchnorr(hash, this.privateKey));
+      if (!tweakHash)
+        return Buffer.from(ecc.signSchnorr(hash, this.privateKey, e));
+
+      const privateKey =
+        this.publicKey[0] === 2
+          ? this.privateKey
+          : ecc.privateNegate(this.privateKey!);
+
+      const tweakedPrivateKey = ecc.privateAdd(privateKey, tweakHash);
+      if (!tweakedPrivateKey) {
+        throw new Error('Invalid tweaked private key!');
+      }
+      return Buffer.from(ecc.signSchnorr(hash, tweakedPrivateKey, e));
     }
 
     verify(hash: Buffer, signature: Buffer): boolean {

@@ -315,6 +315,26 @@ describe('ECPair', () => {
         );
       });
 
+      it('creates signature for tweaked private key', () => {
+        const kP = ECPair.fromPrivateKey(ONE, {
+          compressed: true,
+        });
+        const h = Buffer.alloc(32, 2);
+        const tweakHash = Buffer.from(
+          '3cf5216d476a5e637bf0da674e50ddf55c403270dd36494dfcca438132fa30e7',
+          'hex',
+        );
+        const schnorrTweakedSig = Buffer.from(
+          'c2cc6ba5ac926ae7a99b2dc4d410532c05787c562e5ae02fb4f204e8a4e86384ef4b436597bbc1808dcfa9f3e4223e0c2a9ab6fd4b43ab2c6d18405c43b8f0a6',
+          'hex',
+        );
+
+        assert.deepStrictEqual(
+          kP.signSchnorr(h, tweakHash).toString('hex'),
+          schnorrTweakedSig.toString('hex'),
+        );
+      });
+
       it(
         'wraps tinysecp.signSchnorr',
         hoodwink(function (this: any): void {
