@@ -320,7 +320,7 @@ describe('ECPair', () => {
           compressed: true,
         });
         const h = Buffer.alloc(32, 2);
-        const tweakHash = Buffer.from(
+        const tweak = Buffer.from(
           '3cf5216d476a5e637bf0da674e50ddf55c403270dd36494dfcca438132fa30e7',
           'hex',
         );
@@ -330,7 +330,7 @@ describe('ECPair', () => {
         );
 
         assert.deepStrictEqual(
-          kP.signSchnorr(h, tweakHash).toString('hex'),
+          kP.signSchnorr(h, undefined, tweak).toString('hex'),
           schnorrTweakedSig.toString('hex'),
         );
       });
@@ -404,6 +404,23 @@ describe('ECPair', () => {
         );
 
         assert.strictEqual(kP.verifySchnorr(h, schnorrsig), true);
+      });
+
+      it('checks signature for tweaked pubic key', () => {
+        const kP = ECPair.fromPrivateKey(ONE, {
+          compressed: false,
+        });
+        const h = Buffer.alloc(32, 2);
+        const tweak = Buffer.from(
+          '3cf5216d476a5e637bf0da674e50ddf55c403270dd36494dfcca438132fa30e7',
+          'hex',
+        );
+        const schnorrsig = Buffer.from(
+          'c2cc6ba5ac926ae7a99b2dc4d410532c05787c562e5ae02fb4f204e8a4e86384ef4b436597bbc1808dcfa9f3e4223e0c2a9ab6fd4b43ab2c6d18405c43b8f0a6',
+          'hex',
+        );
+
+        assert.strictEqual(kP.verifySchnorr(h, schnorrsig, tweak), true);
       });
 
       it(

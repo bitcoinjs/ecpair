@@ -151,6 +151,26 @@ export function testEcc(ecc: TinySecp256k1Interface): void {
   );
   assert(
     Buffer.from(
+      ecc.pointAddScalar(
+        h('0379be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798'),
+        h('0000000000000000000000000000000000000000000000000000000000000002'),
+      )!,
+    ).equals(
+      h('0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798'),
+    ),
+  );
+  assert(
+    Buffer.from(
+      ecc.pointAddScalar(
+        h('0379be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798'),
+        h('fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364140'),
+      )!,
+    ).equals(
+      h('03c6047f9441ed7d6d3045406e95c07cd85c778e4b8cef3ca7abac09b95c709ee5'),
+    ),
+  );
+  assert(
+    Buffer.from(
       ecc.pointFromScalar(
         h('b1121e4088a66a28f5b6b0f5844943ecd9f610196d7bb83b25214b60452c09af'),
       )!,

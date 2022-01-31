@@ -26,8 +26,8 @@ export interface ECPairInterface extends Signer {
     privateKey?: Buffer;
     toWIF(): string;
     verify(hash: Buffer, signature: Buffer): boolean;
-    verifySchnorr(hash: Buffer, signature: Buffer): boolean;
-    signSchnorr(hash: Buffer, teakHash?: Buffer, extraEntropy?: Buffer): Buffer;
+    verifySchnorr(hash: Buffer, signature: Buffer, tweak?: Buffer): boolean;
+    signSchnorr(hash: Buffer, extraEntropy?: Buffer, teak?: Buffer): Buffer;
 }
 export interface ECPairAPI {
     isPoint(maybePoint: any): boolean;
@@ -40,6 +40,7 @@ export interface TinySecp256k1Interface {
     isPoint(p: Uint8Array): boolean;
     pointCompress(p: Uint8Array, compressed?: boolean): Uint8Array;
     pointFromScalar(d: Uint8Array, compressed?: boolean): Uint8Array | null;
+    pointAddScalar(p: Uint8Array, tweak: Uint8Array, compressed?: boolean): Uint8Array | null;
     isPrivate(d: Uint8Array): boolean;
     privateAdd(d: Uint8Array, tweak: Uint8Array): Uint8Array | null;
     privateNegate(d: Uint8Array): Uint8Array;

@@ -116,17 +116,16 @@ function ECPairFactory(ecc) {
         return Buffer.from(sig);
       }
     }
-    signSchnorr(hash, tweakHash, e) {
+    signSchnorr(hash, e, tweak) {
       if (!this.privateKey) throw new Error('Missing private key');
       if (!ecc.signSchnorr)
         throw new Error('signSchnorr not supported by ecc library');
-      if (!tweakHash)
-        return Buffer.from(ecc.signSchnorr(hash, this.privateKey, e));
+      if (!tweak) return Buffer.from(ecc.signSchnorr(hash, this.privateKey, e));
       const privateKey =
         this.publicKey[0] === 2
           ? this.privateKey
           : ecc.privateNegate(this.privateKey);
-      const tweakedPrivateKey = ecc.privateAdd(privateKey, tweakHash);
+      const tweakedPrivateKey = ecc.privateAdd(privateKey, tweak);
       if (!tweakedPrivateKey) {
         throw new Error('Invalid tweaked private key!');
       }
@@ -135,10 +134,24 @@ function ECPairFactory(ecc) {
     verify(hash, signature) {
       return ecc.verify(hash, this.publicKey, signature);
     }
-    verifySchnorr(hash, signature) {
+    verifySchnorr(hash, signature, tweak) {
       if (!ecc.verifySchnorr)
         throw new Error('verifySchnorr not supported by ecc library');
-      return ecc.verifySchnorr(hash, this.publicKey.subarray(1, 33), signature);
+      if (!tweak)
+        return ecc.verifySchnorr(
+          hash,
+          this.publicKey.subarray(1, 33),
+          signature,
+        );
+      const tweakedPublicKey = ecc.pointAddScalar(this.publicKey, tweak);
+      if (!tweakedPublicKey) {
+        throw new Error('Invalid tweaked publc key!');
+      }
+      return ecc.verifySchnorr(
+        hash,
+        tweakedPublicKey.subarray(1, 33),
+        signature,
+      );
     }
   }
   return {
