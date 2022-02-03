@@ -41,7 +41,7 @@ export interface ECPairInterface extends Signer {
   toWIF(): string;
   verify(hash: Buffer, signature: Buffer): boolean;
   verifySchnorr(hash: Buffer, signature: Buffer, tweak?: Buffer): boolean;
-  signSchnorr(hash: Buffer, extraEntropy?: Buffer, teak?: Buffer): Buffer;
+  signSchnorr(hash: Buffer, extraEntropy?: Buffer, tweak?: Buffer): Buffer;
 }
 
 export interface ECPairAPI {
