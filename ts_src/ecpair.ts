@@ -13,6 +13,9 @@ const isOptions = types.typeforce.maybe(
   }),
 );
 
+const toXOnly = (pubKey: Buffer) =>
+  pubKey.length === 32 ? pubKey : pubKey.slice(1, 33);
+
 interface ECPairOptions {
   compressed?: boolean;
   network?: Network;
@@ -39,6 +42,7 @@ export interface ECPairInterface extends Signer {
   lowR: boolean;
   privateKey?: Buffer;
   toWIF(): string;
+  tweak(t: Buffer): ECPairInterface;
   verify(hash: Buffer, signature: Buffer): boolean;
   verifySchnorr(hash: Buffer, signature: Buffer): boolean;
   signSchnorr(hash: Buffer): Buffer;
@@ -57,6 +61,13 @@ export interface TinySecp256k1Interface {
   pointCompress(p: Uint8Array, compressed?: boolean): Uint8Array;
   isPrivate(d: Uint8Array): boolean;
   pointFromScalar(d: Uint8Array, compressed?: boolean): Uint8Array | null;
+  xOnlyPointAddTweak(
+    p: Uint8Array,
+    tweak: Uint8Array,
+  ): XOnlyPointAddTweakResult | null;
+
+  privateAdd(d: Uint8Array, tweak: Uint8Array): Uint8Array | null;
+  privateNegate(d: Uint8Array): Uint8Array;
 
   sign(h: Uint8Array, d: Uint8Array, e?: Uint8Array): Uint8Array;
   signSchnorr?(h: Uint8Array, d: Uint8Array, e?: Uint8Array): Uint8Array;
@@ -68,6 +79,11 @@ export interface TinySecp256k1Interface {
     strict?: boolean,
   ): boolean;
   verifySchnorr?(h: Uint8Array, Q: Uint8Array, signature: Uint8Array): boolean;
+}
+
+export interface XOnlyPointAddTweakResult {
+  parity: 1 | 0;
+  xOnlyPubkey: Uint8Array;
 }
 
 export function ECPairFactory(ecc: TinySecp256k1Interface): ECPairAPI {
@@ -184,6 +200,11 @@ export function ECPairFactory(ecc: TinySecp256k1Interface): ECPairAPI {
       return wif.encode(this.network.wif, this.__D, this.compressed);
     }
 
+    tweak(t: Buffer): ECPairInterface {
+      if (!this.privateKey) return this.tweakFromPublicKey(t);
+      return this.tweakFromPrivateKey(t);
+    }
+
     sign(hash: Buffer, lowR?: boolean): Buffer {
       if (!this.__D) throw new Error('Missing private key');
       if (lowR === undefined) lowR = this.lowR;
@@ -219,6 +240,36 @@ export function ECPairFactory(ecc: TinySecp256k1Interface): ECPairAPI {
       if (!ecc.verifySchnorr)
         throw new Error('verifySchnorr not supported by ecc library');
       return ecc.verifySchnorr(hash, this.publicKey.subarray(1, 33), signature);
+    }
+
+    private tweakFromPublicKey(t: Buffer): ECPairInterface {
+      const xOnlyPubKey = toXOnly(this.publicKey);
+      const tweakedPublicKey = ecc.xOnlyPointAddTweak(xOnlyPubKey, t);
+      if (!tweakedPublicKey || tweakedPublicKey.xOnlyPubkey === null)
+        throw new Error('Cannot tweak public key!');
+      const parityByte = Buffer.from([
+        tweakedPublicKey.parity === 0 ? 0x02 : 0x03,
+      ]);
+      return fromPublicKey(
+        Buffer.concat([parityByte, tweakedPublicKey.xOnlyPubkey]),
+        { network: this.network, compressed: this.compressed },
+      );
+    }
+
+    private tweakFromPrivateKey(t: Buffer): ECPairInterface {
+      const parity = this.publicKey[0] === 4 && this.publicKey[64] & 1;
+      const privateKey =
+        this.publicKey[0] === 2 || parity === 0
+          ? this.privateKey
+          : ecc.privateNegate(this.privateKey!);
+
+      const tweakedPrivateKey = ecc.privateAdd(privateKey!, t);
+      if (!tweakedPrivateKey) throw new Error('Invalid tweaked private key!');
+
+      return fromPrivateKey(Buffer.from(tweakedPrivateKey), {
+        network: this.network,
+        compressed: this.compressed,
+      });
     }
   }
 
