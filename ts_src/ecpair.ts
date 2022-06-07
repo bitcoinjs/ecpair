@@ -201,8 +201,8 @@ export function ECPairFactory(ecc: TinySecp256k1Interface): ECPairAPI {
     }
 
     tweak(t: Buffer): ECPairInterface {
-      if (!this.privateKey) return this.tweakFromPublicKey(t);
-      return this.tweakFromPrivateKey(t);
+      if (this.privateKey) return this.tweakFromPrivateKey(t);
+      return this.tweakFromPublicKey(t);
     }
 
     sign(hash: Buffer, lowR?: boolean): Buffer {

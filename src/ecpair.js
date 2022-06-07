@@ -100,8 +100,8 @@ function ECPairFactory(ecc) {
       return wif.encode(this.network.wif, this.__D, this.compressed);
     }
     tweak(t) {
-      if (!this.privateKey) return this.tweakFromPublicKey(t);
-      return this.tweakFromPrivateKey(t);
+      if (this.privateKey) return this.tweakFromPrivateKey(t);
+      return this.tweakFromPublicKey(t);
     }
     sign(hash, lowR) {
       if (!this.__D) throw new Error('Missing private key');
