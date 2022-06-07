@@ -150,11 +150,12 @@ function ECPairFactory(ecc) {
       );
     }
     tweakFromPrivateKey(t) {
-      const parity = this.publicKey[0] === 4 && this.publicKey[64] & 1;
-      const privateKey =
-        this.publicKey[0] === 2 || parity === 0
-          ? this.privateKey
-          : ecc.privateNegate(this.privateKey);
+      const hasOddY =
+        this.publicKey[0] === 3 ||
+        (this.publicKey[0] === 4 && (this.publicKey[64] & 1) === 1);
+      const privateKey = hasOddY
+        ? ecc.privateNegate(this.privateKey)
+        : this.privateKey;
       const tweakedPrivateKey = ecc.privateAdd(privateKey, t);
       if (!tweakedPrivateKey) throw new Error('Invalid tweaked private key!');
       return fromPrivateKey(Buffer.from(tweakedPrivateKey), {
