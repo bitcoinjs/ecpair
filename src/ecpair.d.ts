@@ -50,7 +50,7 @@ export interface TinySecp256k1Interface {
     verify(h: Uint8Array, Q: Uint8Array, signature: Uint8Array, strict?: boolean): boolean;
     verifySchnorr?(h: Uint8Array, Q: Uint8Array, signature: Uint8Array): boolean;
 }
-export interface XOnlyPointAddTweakResult {
+interface XOnlyPointAddTweakResult {
     parity: 1 | 0;
     xOnlyPubkey: Uint8Array;
 }
