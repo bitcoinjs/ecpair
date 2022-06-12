@@ -1,4 +1,5 @@
 import * as assert from 'assert';
+import * as createHash from 'create-hash';
 import { beforeEach, describe, it } from 'mocha';
 import * as proxyquire from 'proxyquire';
 import { ECPairFactory, ECPairInterface, networks as NETWORKS } from '..';
@@ -22,6 +23,17 @@ const GROUP_ORDER_LESS_1 = Buffer.from(
   'fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364140',
   'hex',
 );
+
+function sha256(buffer: Buffer): Buffer {
+  return createHash('sha256').update(buffer).digest();
+}
+
+function tapTweakHash(pubKey: Buffer, h?: Buffer): Buffer {
+  const data = Buffer.concat(h ? [pubKey, h] : [pubKey]);
+  const tagHash = sha256(Buffer.from('TapTweak'));
+  const tag = Buffer.concat([tagHash, tagHash]);
+  return sha256(Buffer.concat([tag, data]));
+}
 
 describe('ECPair', () => {
   describe('getPublicKey', () => {
@@ -246,6 +258,31 @@ describe('ECPair', () => {
         ECPair.makeRandom({ rng });
       }),
     );
+  });
+
+  describe('tweak', () => {
+    fixtures.valid.forEach((f) => {
+      it('tweaks private and public key for ' + f.WIF, () => {
+        const network = (NETWORKS as any)[f.network];
+        const keyPair = ECPair.fromWIF(f.WIF, NETWORKS_LIST);
+        const hash = tapTweakHash(keyPair.publicKey.slice(1, 33));
+
+        const tweakedKeyPair = keyPair.tweak(hash);
+        assert.strictEqual(tweakedKeyPair.toWIF(), f.tweak);
+
+        const Q = Buffer.from(f.Q, 'hex');
+        const pubOnlyKeyPair = ECPair.fromPublicKey(Q, {
+          network,
+          compressed: f.compressed,
+        });
+        const tweakedPubOnlyKeyPair = pubOnlyKeyPair.tweak(hash);
+
+        assert.deepStrictEqual(
+          tweakedKeyPair.publicKey,
+          tweakedPubOnlyKeyPair.publicKey,
+        );
+      });
+    });
   });
 
   describe('.network', () => {

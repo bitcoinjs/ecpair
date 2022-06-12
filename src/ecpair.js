@@ -13,6 +13,8 @@ const isOptions = types.typeforce.maybe(
     network: types.maybe(types.Network),
   }),
 );
+const toXOnly = (pubKey) =>
+  pubKey.length === 32 ? pubKey : pubKey.slice(1, 33);
 function ECPairFactory(ecc) {
   (0, testecc_1.testEcc)(ecc);
   function isPoint(maybePoint) {
@@ -97,6 +99,10 @@ function ECPairFactory(ecc) {
       if (!this.__D) throw new Error('Missing private key');
       return wif.encode(this.network.wif, this.__D, this.compressed);
     }
+    tweak(t) {
+      if (this.privateKey) return this.tweakFromPrivateKey(t);
+      return this.tweakFromPublicKey(t);
+    }
     sign(hash, lowR) {
       if (!this.__D) throw new Error('Missing private key');
       if (lowR === undefined) lowR = this.lowR;
@@ -129,6 +135,33 @@ function ECPairFactory(ecc) {
       if (!ecc.verifySchnorr)
         throw new Error('verifySchnorr not supported by ecc library');
       return ecc.verifySchnorr(hash, this.publicKey.subarray(1, 33), signature);
+    }
+    tweakFromPublicKey(t) {
+      const xOnlyPubKey = toXOnly(this.publicKey);
+      const tweakedPublicKey = ecc.xOnlyPointAddTweak(xOnlyPubKey, t);
+      if (!tweakedPublicKey || tweakedPublicKey.xOnlyPubkey === null)
+        throw new Error('Cannot tweak public key!');
+      const parityByte = Buffer.from([
+        tweakedPublicKey.parity === 0 ? 0x02 : 0x03,
+      ]);
+      return fromPublicKey(
+        Buffer.concat([parityByte, tweakedPublicKey.xOnlyPubkey]),
+        { network: this.network, compressed: this.compressed },
+      );
+    }
+    tweakFromPrivateKey(t) {
+      const hasOddY =
+        this.publicKey[0] === 3 ||
+        (this.publicKey[0] === 4 && (this.publicKey[64] & 1) === 1);
+      const privateKey = hasOddY
+        ? ecc.privateNegate(this.privateKey)
+        : this.privateKey;
+      const tweakedPrivateKey = ecc.privateAdd(privateKey, t);
+      if (!tweakedPrivateKey) throw new Error('Invalid tweaked private key!');
+      return fromPrivateKey(Buffer.from(tweakedPrivateKey), {
+        network: this.network,
+        compressed: this.compressed,
+      });
     }
   }
   return {
