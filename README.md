@@ -3,6 +3,8 @@
 
 A library for managing SECP256k1 keypairs written in TypeScript with transpiled JavaScript committed to git.
 
+This BitGo fork improves compatibility with fork coins, and alternative SECP256K1 implementations.
+
 ## Example
 
 TypeScript

@@ -1,6 +1,6 @@
 {
-  "name": "ecpair",
-  "version": "2.0.1",
+  "name": "@bitgo/ecpair",
+  "version": "2.1.0-rc.0",
   "description": "Client-side Bitcoin JavaScript library ECPair",
   "main": "./src/index.js",
   "types": "./src/index.d.ts",
