@@ -1,7 +1,7 @@
 // https://en.bitcoin.it/wiki/List_of_address_prefixes
 export interface Network {
   messagePrefix: string;
-  bech32: string;
+  bech32?: string;
   bip32: Bip32;
   pubKeyHash: number;
   scriptHash: number;
