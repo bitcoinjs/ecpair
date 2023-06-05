@@ -76,13 +76,22 @@ describe('ECPair', () => {
       assert.strictEqual(keyPair.compressed, false);
     });
 
-    it('supports the network option', () => {
+    it('supports the network option testnet', () => {
       const keyPair = ECPair.fromPrivateKey(ONE, {
         compressed: false,
         network: NETWORKS.testnet,
       });
 
       assert.strictEqual(keyPair.network, NETWORKS.testnet);
+    });
+
+    it('supports the network option regtest', () => {
+      const keyPair = ECPair.fromPrivateKey(ONE, {
+        compressed: false,
+        network: NETWORKS.regtest,
+      });
+
+      assert.strictEqual(keyPair.network, NETWORKS.regtest);
     });
 
     fixtures.valid.forEach((f) => {
@@ -214,7 +223,7 @@ describe('ECPair', () => {
       assert.strictEqual(keyPair.network, NETWORKS.bitcoin);
     });
 
-    it('supports the options parameter', () => {
+    it('supports the options parameter testnet', () => {
       const keyPair = ECPair.makeRandom({
         compressed: false,
         network: NETWORKS.testnet,
@@ -222,6 +231,16 @@ describe('ECPair', () => {
 
       assert.strictEqual(keyPair.compressed, false);
       assert.strictEqual(keyPair.network, NETWORKS.testnet);
+    });
+
+    it('supports the options parameter regtest', () => {
+      const keyPair = ECPair.makeRandom({
+        compressed: false,
+        network: NETWORKS.regtest,
+      });
+
+      assert.strictEqual(keyPair.compressed, false);
+      assert.strictEqual(keyPair.network, NETWORKS.regtest);
     });
 
     it('throws if d is bad length', () => {
