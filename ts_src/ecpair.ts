@@ -8,23 +8,31 @@ export { networks };
 import * as v from 'valibot';
 import * as tools from 'uint8array-tools';
 
-const OptionsSchema = v.optional(
-  v.nullable(
-    v.object({
-      compressed: v.optional(v.nullable(v.boolean())),
-      network: v.optional(v.nullable(types.NetworkSchema)),
-    }),
-  ),
+const ECPairOptionsSchema = v.optional(
+  v.object({
+    compressed: v.optional(v.boolean()),
+    network: v.optional(types.NetworkSchema),
+    //https://github.com/fabian-hiller/valibot/issues/243#issuecomment-2182514063
+    rng: v.optional(
+      v.pipe(
+        v.instance(Function),
+        v.transform((func) => {
+          return (arg?: number) => {
+            const parsedArg = v.parse(v.optional(v.number()), arg);
+            const return_ = func(parsedArg);
+            const parsedReturn = v.parse(v.instance(Uint8Array), return_);
+            return parsedReturn;
+          };
+        }),
+      ),
+    ),
+  }),
 );
+
+type ECPairOptions = v.InferOutput<typeof ECPairOptionsSchema>;
 
 const toXOnly = (pubKey: Uint8Array) =>
   pubKey.length === 32 ? pubKey : pubKey.slice(1, 33);
-
-interface ECPairOptions {
-  compressed?: boolean;
-  network?: Network;
-  rng?(arg0: number): Uint8Array;
-}
 
 export interface Signer {
   publicKey: Uint8Array;
@@ -103,7 +111,7 @@ export function ECPairFactory(ecc: TinySecp256k1Interface): ECPairAPI {
     v.parse(types.Buffer256Bit, buffer);
     if (!ecc.isPrivate(buffer))
       throw new TypeError('Private key not in range [1, n)');
-    v.parse(OptionsSchema, options);
+    v.parse(ECPairOptionsSchema, options);
 
     return new ECPair(buffer, undefined, options);
   }
@@ -115,7 +123,7 @@ export function ECPairFactory(ecc: TinySecp256k1Interface): ECPairAPI {
     if (!ecc.isPoint(buffer)) {
       throw new Error('Point not on the curve');
     }
-    v.parse(OptionsSchema, options);
+    v.parse(ECPairOptionsSchema, options);
     return new ECPair(undefined, buffer, options);
   }
 
@@ -151,7 +159,7 @@ export function ECPairFactory(ecc: TinySecp256k1Interface): ECPairAPI {
   }
 
   function makeRandom(options?: ECPairOptions): ECPairInterface {
-    v.parse(OptionsSchema, options);
+    v.parse(ECPairOptionsSchema, options);
     if (options === undefined) options = {};
     const rng =
       options.rng ||

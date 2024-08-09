@@ -54,13 +54,25 @@ const wif = __importStar(require('wif'));
 const testecc_1 = require('./testecc.cjs');
 const v = __importStar(require('valibot'));
 const tools = __importStar(require('uint8array-tools'));
-const OptionsSchema = v.optional(
-  v.nullable(
-    v.object({
-      compressed: v.optional(v.nullable(v.boolean())),
-      network: v.optional(v.nullable(types.NetworkSchema)),
-    }),
-  ),
+const ECPairOptionsSchema = v.optional(
+  v.object({
+    compressed: v.optional(v.boolean()),
+    network: v.optional(types.NetworkSchema),
+    //https://github.com/fabian-hiller/valibot/issues/243#issuecomment-2182514063
+    rng: v.optional(
+      v.pipe(
+        v.instance(Function),
+        v.transform((func) => {
+          return (arg) => {
+            const parsedArg = v.parse(v.optional(v.number()), arg);
+            const return_ = func(parsedArg);
+            const parsedReturn = v.parse(v.instance(Uint8Array), return_);
+            return parsedReturn;
+          };
+        }),
+      ),
+    ),
+  }),
 );
 const toXOnly = (pubKey) =>
   pubKey.length === 32 ? pubKey : pubKey.slice(1, 33);
@@ -73,14 +85,14 @@ function ECPairFactory(ecc) {
     v.parse(types.Buffer256Bit, buffer);
     if (!ecc.isPrivate(buffer))
       throw new TypeError('Private key not in range [1, n)');
-    v.parse(OptionsSchema, options);
+    v.parse(ECPairOptionsSchema, options);
     return new ECPair(buffer, undefined, options);
   }
   function fromPublicKey(buffer, options) {
     if (!ecc.isPoint(buffer)) {
       throw new Error('Point not on the curve');
     }
-    v.parse(OptionsSchema, options);
+    v.parse(ECPairOptionsSchema, options);
     return new ECPair(undefined, buffer, options);
   }
   function fromWIF(wifString, network) {
@@ -105,7 +117,7 @@ function ECPairFactory(ecc) {
     });
   }
   function makeRandom(options) {
-    v.parse(OptionsSchema, options);
+    v.parse(ECPairOptionsSchema, options);
     if (options === undefined) options = {};
     const rng =
       options.rng || ((size) => crypto.getRandomValues(new Uint8Array(size)));

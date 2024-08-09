@@ -1,11 +1,23 @@
 import { Network } from './networks';
 import * as networks from './networks';
 export { networks };
-interface ECPairOptions {
-    compressed?: boolean;
-    network?: Network;
-    rng?(arg0: number): Uint8Array;
-}
+import * as v from 'valibot';
+declare const ECPairOptionsSchema: v.OptionalSchema<v.ObjectSchema<{
+    readonly compressed: v.OptionalSchema<v.BooleanSchema<undefined>, never>;
+    readonly network: v.OptionalSchema<v.ObjectSchema<{
+        readonly messagePrefix: v.UnionSchema<[v.StringSchema<undefined>, v.InstanceSchema<Uint8ArrayConstructor, undefined>], undefined>;
+        readonly bech32: v.StringSchema<undefined>;
+        readonly bip32: v.ObjectSchema<{
+            readonly public: v.SchemaWithPipe<[v.NumberSchema<undefined>, v.IntegerAction<number, undefined>, v.MinValueAction<number, 0, undefined>, v.MaxValueAction<number, 4294967295, undefined>]>;
+            readonly private: v.SchemaWithPipe<[v.NumberSchema<undefined>, v.IntegerAction<number, undefined>, v.MinValueAction<number, 0, undefined>, v.MaxValueAction<number, 4294967295, undefined>]>;
+        }, undefined>;
+        readonly pubKeyHash: v.SchemaWithPipe<[v.NumberSchema<undefined>, v.IntegerAction<number, undefined>, v.MinValueAction<number, 0, undefined>, v.MaxValueAction<number, 255, undefined>]>;
+        readonly scriptHash: v.SchemaWithPipe<[v.NumberSchema<undefined>, v.IntegerAction<number, undefined>, v.MinValueAction<number, 0, undefined>, v.MaxValueAction<number, 255, undefined>]>;
+        readonly wif: v.SchemaWithPipe<[v.NumberSchema<undefined>, v.IntegerAction<number, undefined>, v.MinValueAction<number, 0, undefined>, v.MaxValueAction<number, 255, undefined>]>;
+    }, undefined>, never>;
+    readonly rng: v.OptionalSchema<v.SchemaWithPipe<[v.InstanceSchema<FunctionConstructor, undefined>, v.TransformAction<Function, (arg?: number) => Uint8Array>]>, never>;
+}, undefined>, never>;
+type ECPairOptions = v.InferOutput<typeof ECPairOptionsSchema>;
 export interface Signer {
     publicKey: Uint8Array;
     network?: any;
