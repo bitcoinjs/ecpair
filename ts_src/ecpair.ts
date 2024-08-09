@@ -1,7 +1,7 @@
 import { Network } from './networks';
 import * as networks from './networks';
 import * as types from './types';
-import randomBytes from 'randombytes';
+// import randomBytes from 'randombytes';
 import * as wif from 'wif';
 import { testEcc } from './testecc';
 export { networks };
@@ -153,7 +153,9 @@ export function ECPairFactory(ecc: TinySecp256k1Interface): ECPairAPI {
   function makeRandom(options?: ECPairOptions): ECPairInterface {
     v.parse(OptionsSchema, options);
     if (options === undefined) options = {};
-    const rng = options.rng || randomBytes;
+    const rng =
+      options.rng ||
+      ((size: any) => crypto.getRandomValues(new Uint8Array(size)));
 
     let d;
     do {

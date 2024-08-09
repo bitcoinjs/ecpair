@@ -43,18 +43,13 @@ var __importStar =
     __setModuleDefault(result, mod);
     return result;
   };
-var __importDefault =
-  (this && this.__importDefault) ||
-  function (mod) {
-    return mod && mod.__esModule ? mod : { default: mod };
-  };
 Object.defineProperty(exports, '__esModule', { value: true });
 exports.networks = void 0;
 exports.ECPairFactory = ECPairFactory;
 const networks = __importStar(require('./networks.cjs'));
 exports.networks = networks;
 const types = __importStar(require('./types.cjs'));
-const randombytes_1 = __importDefault(require('randombytes'));
+// import randomBytes from 'randombytes';
 const wif = __importStar(require('wif'));
 const testecc_1 = require('./testecc.cjs');
 const v = __importStar(require('valibot'));
@@ -112,7 +107,8 @@ function ECPairFactory(ecc) {
   function makeRandom(options) {
     v.parse(OptionsSchema, options);
     if (options === undefined) options = {};
-    const rng = options.rng || randombytes_1.default;
+    const rng =
+      options.rng || ((size) => crypto.getRandomValues(new Uint8Array(size)));
     let d;
     do {
       d = rng(32);

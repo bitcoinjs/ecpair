@@ -1,6 +1,6 @@
 import * as networks from './networks';
 import * as types from './types';
-import randomBytes from 'randombytes';
+// import randomBytes from 'randombytes';
 import * as wif from 'wif';
 import { testEcc } from './testecc';
 export { networks };
@@ -59,7 +59,8 @@ export function ECPairFactory(ecc) {
   function makeRandom(options) {
     v.parse(OptionsSchema, options);
     if (options === undefined) options = {};
-    const rng = options.rng || randomBytes;
+    const rng =
+      options.rng || ((size) => crypto.getRandomValues(new Uint8Array(size)));
     let d;
     do {
       d = rng(32);

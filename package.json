@@ -56,7 +56,6 @@
     "src"
   ],
   "dependencies": {
-    "randombytes": "^2.1.0",
     "uint8array-tools": "^0.0.8",
     "valibot": "^0.37.0",
     "wif": "^5.0.0"

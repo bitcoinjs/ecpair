@@ -1,7 +1,6 @@
 import * as assert from 'assert';
 import { createHash } from 'crypto';
 import { beforeEach, describe, it } from 'mocha';
-import proxyquire from 'proxyquire';
 import { ECPairFactory, networks as NETWORKS } from '../src/esm';
 import type { ECPairInterface, TinySecp256k1Interface } from '..';
 import fixtures from './fixtures/ecpair.json';
@@ -181,17 +180,17 @@ describe('ECPair', () => {
     const d = Buffer.alloc(32, 4);
     const exWIF = 'KwMWvwRJeFqxYyhZgNwYuYjbQENDAPAudQx5VEmKJrUZcq6aL2pv';
 
-    describe('uses randombytes RNG', () => {
+    describe('uses crypto.getRandomBytes as RNG', () => {
       it('generates a ECPair', () => {
-        const stub = {
-          randombytes: (): Buffer => {
-            return d;
-          },
+        const originalFn = crypto.getRandomValues;
+        // @ts-ignore
+        crypto.getRandomValues = (): Buffer => {
+          return d;
         };
-        const ProxiedECPair = proxyquire('../src/esm/ecpair.js', stub);
 
-        const keyPair = ProxiedECPair.ECPairFactory(tinysecp).makeRandom();
+        const keyPair = ECPair.makeRandom();
         assert.strictEqual(keyPair.toWIF(), exWIF);
+        crypto.getRandomValues = originalFn;
       });
     });
 
