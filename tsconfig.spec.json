@@ -1,0 +1,13 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "rootDir": "test/",
+    "outDir": "test/",
+    "resolveJsonModule": true,
+    "module": "ESNext",
+    "moduleResolution": "Node"
+  },
+  "include": ["test/**/*.ts"],
+  "exclude": []
+}

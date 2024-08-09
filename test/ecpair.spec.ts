@@ -1,11 +1,16 @@
 import * as assert from 'assert';
-import * as createHash from 'create-hash';
+import { createHash } from 'crypto';
 import { beforeEach, describe, it } from 'mocha';
-import * as proxyquire from 'proxyquire';
-import { ECPairFactory, ECPairInterface, networks as NETWORKS } from '..';
-import * as fixtures from './fixtures/ecpair.json';
-const hoodwink = require('hoodwink');
-const tinysecp = require('tiny-secp256k1');
+import proxyquire from 'proxyquire';
+import {
+  ECPairFactory,
+  ECPairInterface,
+  networks as NETWORKS,
+  TinySecp256k1Interface,
+} from '../';
+import fixtures from './fixtures/ecpair.json';
+import * as tinysecp from 'tiny-secp256k1';
+import * as tools from 'uint8array-tools';
 
 const ECPair = ECPairFactory(tinysecp);
 
@@ -43,25 +48,28 @@ describe('ECPair', () => {
       keyPair = ECPair.fromPrivateKey(ONE);
     });
 
-    it(
-      'calls pointFromScalar lazily',
-      hoodwink(() => {
-        assert.strictEqual((keyPair as any).__Q, undefined);
+    it('calls pointFromScalar lazily', () => {
+      assert.strictEqual((keyPair as any).__Q, undefined);
 
-        // .publicKey forces the memoization
-        assert.strictEqual(
-          keyPair.publicKey.toString('hex'),
-          '0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798',
-        );
-        assert.strictEqual(
-          (keyPair as any).__Q.toString('hex'),
-          '0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798',
-        );
-      }),
-    );
+      // .publicKey forces the memoization
+      assert.strictEqual(
+        tools.toHex(keyPair.publicKey),
+        '0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798',
+      );
+      assert.strictEqual(
+        tools.toHex((keyPair as any).__Q),
+        '0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798',
+      );
+    });
   });
 
   describe('fromPrivateKey', () => {
+    it('sets the private key', () => {
+      const keyPair = ECPairFactory(tinysecp).fromPrivateKey(ONE);
+
+      assert.strictEqual(keyPair.privateKey, ONE);
+    });
+
     it('defaults to compressed', () => {
       const keyPair = ECPair.fromPrivateKey(ONE);
 
@@ -92,7 +100,7 @@ describe('ECPair', () => {
           compressed: f.compressed,
         });
 
-        assert.strictEqual(keyPair.publicKey.toString('hex'), f.Q);
+        assert.strictEqual(tools.toHex(keyPair.publicKey), f.Q);
       });
     });
 
@@ -123,7 +131,7 @@ describe('ECPair', () => {
         const network = (NETWORKS as any)[f.network];
         const keyPair = ECPair.fromWIF(f.WIF, network);
 
-        assert.strictEqual(keyPair.privateKey!.toString('hex'), f.d);
+        assert.strictEqual(tools.toHex(keyPair.privateKey!), f.d);
         assert.strictEqual(keyPair.compressed, f.compressed);
         assert.strictEqual(keyPair.network, network);
       });
@@ -133,7 +141,7 @@ describe('ECPair', () => {
       it('imports ' + f.WIF + ' (via list of networks)', () => {
         const keyPair = ECPair.fromWIF(f.WIF, NETWORKS_LIST);
 
-        assert.strictEqual(keyPair.privateKey!.toString('hex'), f.d);
+        assert.strictEqual(tools.toHex(keyPair.privateKey!), f.d);
         assert.strictEqual(keyPair.compressed, f.compressed);
         assert.strictEqual(keyPair.network, (NETWORKS as any)[f.network]);
       });
@@ -190,7 +198,7 @@ describe('ECPair', () => {
             return d;
           },
         };
-        const ProxiedECPair = proxyquire('../src/ecpair', stub);
+        const ProxiedECPair = proxyquire('../src/esm/ecpair.js', stub);
 
         const keyPair = ProxiedECPair.ECPairFactory(tinysecp).makeRandom();
         assert.strictEqual(keyPair.toWIF(), exWIF);
@@ -199,7 +207,7 @@ describe('ECPair', () => {
 
     it('allows a custom RNG to be used', () => {
       const keyPair = ECPair.makeRandom({
-        rng: (size): Buffer => {
+        rng: (size: number): Buffer => {
           return d.slice(0, size);
         },
       });
@@ -231,33 +239,32 @@ describe('ECPair', () => {
 
       assert.throws(() => {
         ECPair.makeRandom({ rng });
-      }, /Expected Buffer\(Length: 32\), got Buffer\(Length: 28\)/);
+      }, /ValiError: Invalid length: Expected 32 but received 28/);
     });
 
-    it(
-      'loops until d is within interval [1, n) : 1',
-      hoodwink(function (this: any): void {
-        const rng = this.stub(() => {
-          if (rng.calls === 0) return ZERO; // 0
-          return ONE; // >0
-        }, 2);
+    it('loops until d is within interval [1, n) : 1', () => {
+      let counter = 0;
+      const rng = () => {
+        if (counter++ == 0) return ZERO;
+        return ONE;
+      };
 
-        ECPair.makeRandom({ rng });
-      }),
-    );
+      const keyPair = ECPair.makeRandom({ rng });
+      assert.strictEqual(keyPair.privateKey!, ONE);
+    });
 
-    it(
-      'loops until d is within interval [1, n) : n - 1',
-      hoodwink(function (this: any): void {
-        const rng = this.stub(() => {
-          if (rng.calls === 0) return ZERO; // <1
-          if (rng.calls === 1) return GROUP_ORDER; // >n-1
-          return GROUP_ORDER_LESS_1; // n-1
-        }, 3);
+    it('loops until d is within interval [1, n) : n - 1', () => {
+      let counter = 0;
+      const rng = () => {
+        if (counter++ === 0) return ZERO; // <1
+        if (counter++ === 1) return GROUP_ORDER; // >n-1
+        return GROUP_ORDER_LESS_1; // n-1
+      };
 
-        ECPair.makeRandom({ rng });
-      }),
-    );
+      const keyPair = ECPair.makeRandom({ rng });
+
+      assert.strictEqual(keyPair.privateKey!, GROUP_ORDER_LESS_1);
+    });
   });
 
   describe('tweak', () => {
@@ -265,7 +272,7 @@ describe('ECPair', () => {
       it('tweaks private and public key for ' + f.WIF, () => {
         const network = (NETWORKS as any)[f.network];
         const keyPair = ECPair.fromWIF(f.WIF, NETWORKS_LIST);
-        const hash = tapTweakHash(keyPair.publicKey.slice(1, 33));
+        const hash = tapTweakHash(Buffer.from(keyPair.publicKey.slice(1, 33)));
 
         const tweakedKeyPair = keyPair.tweak(hash);
         assert.strictEqual(tweakedKeyPair.toWIF(), f.tweak);
@@ -302,29 +309,58 @@ describe('ECPair', () => {
     let signature: Buffer;
 
     beforeEach(() => {
-      keyPair = ECPair.makeRandom();
       hash = ZERO;
       signature = Buffer.alloc(64, 1);
+      const mockSign = (h: any, d: any) => {
+        if (h === hash) {
+          assert.strictEqual(h, hash);
+          return signature;
+        } else {
+          return tinysecp.sign(h, d);
+        }
+      };
+
+      const mockSignSchnorr = (h: any, d: any, e: any) => {
+        if (h === hash) {
+          assert.strictEqual(h, hash);
+          return signature;
+        } else {
+          return tinysecp.signSchnorr(h, d, e);
+        }
+      };
+
+      const mockVerify = (h: any, Q: any, sig: any) => {
+        if (h === hash && sig === signature) {
+          assert.strictEqual(h, hash);
+          return true;
+        } else {
+          return tinysecp.verify(h, Q, sig);
+        }
+      };
+
+      const mockVerifySchnorr = (h: any, Q: any, sig: any) => {
+        if (h === hash && sig === signature) {
+          assert.strictEqual(h, hash);
+          return true;
+        } else {
+          return tinysecp.verifySchnorr(h, Q, sig);
+        }
+      };
+
+      // @ts-ignore
+      keyPair = ECPairFactory({
+        ...tinysecp,
+        sign: mockSign,
+        signSchnorr: mockSignSchnorr,
+        verify: mockVerify,
+        verifySchnorr: mockVerifySchnorr,
+      }).makeRandom();
     });
 
     describe('signing', () => {
-      it(
-        'wraps tinysecp.sign',
-        hoodwink(function (this: any): void {
-          this.mock(
-            tinysecp,
-            'sign',
-            (h: any, d: any) => {
-              assert.strictEqual(h, hash);
-              assert.strictEqual(d, keyPair.privateKey);
-              return signature;
-            },
-            1,
-          );
-
-          assert.deepStrictEqual(keyPair.sign(hash), signature);
-        }),
-      );
+      it('wraps tinysecp.sign', function (this: any): void {
+        assert.deepStrictEqual(keyPair.sign(hash), signature);
+      });
 
       it('throws if no private key is found', () => {
         delete (keyPair as any).__D;
@@ -347,27 +383,14 @@ describe('ECPair', () => {
         );
 
         assert.deepStrictEqual(
-          kP.signSchnorr(h).toString('hex'),
+          tools.toHex(kP.signSchnorr(h)),
           schnorrsig.toString('hex'),
         );
       });
 
-      it(
-        'wraps tinysecp.signSchnorr',
-        hoodwink(function (this: any): void {
-          this.mock(
-            tinysecp,
-            'signSchnorr',
-            (h: any) => {
-              assert.strictEqual(h, hash);
-              return signature;
-            },
-            1,
-          );
-
-          assert.deepStrictEqual(keyPair.signSchnorr(hash), signature);
-        }),
-      );
+      it('wraps tinysecp.signSchnorr', () => {
+        assert.deepStrictEqual(keyPair.signSchnorr(hash), signature);
+      });
 
       it('throws if no private key is found', () => {
         delete (keyPair as any).__D;
@@ -382,31 +405,16 @@ describe('ECPair', () => {
           keyPair = ECPairFactory({
             ...tinysecp,
             signSchnorr: null,
-          }).makeRandom();
+          } as unknown as TinySecp256k1Interface).makeRandom();
           keyPair.signSchnorr(hash);
         }, /signSchnorr not supported by ecc library/);
       });
     });
 
     describe('verify', () => {
-      it(
-        'wraps tinysecp.verify',
-        hoodwink(function (this: any): void {
-          this.mock(
-            tinysecp,
-            'verify',
-            (h: any, q: any, s: any) => {
-              assert.strictEqual(h, hash);
-              assert.strictEqual(q, keyPair.publicKey);
-              assert.strictEqual(s, signature);
-              return true;
-            },
-            1,
-          );
-
-          assert.strictEqual(keyPair.verify(hash, signature), true);
-        }),
-      );
+      it('wraps tinysecp.verify', () => {
+        assert.strictEqual(keyPair.verify(hash, signature), true);
+      });
     });
 
     describe('schnorr verify', () => {
@@ -423,31 +431,16 @@ describe('ECPair', () => {
         assert.strictEqual(kP.verifySchnorr(h, schnorrsig), true);
       });
 
-      it(
-        'wraps tinysecp.verifySchnorr',
-        hoodwink(function (this: any): void {
-          this.mock(
-            tinysecp,
-            'verifySchnorr',
-            (h: any, q: any, s: any) => {
-              assert.strictEqual(h, hash);
-              assert.deepStrictEqual(q, keyPair.publicKey.subarray(1, 33));
-              assert.strictEqual(s, signature);
-              return true;
-            },
-            1,
-          );
-
-          assert.strictEqual(keyPair.verifySchnorr(hash, signature), true);
-        }),
-      );
+      it('wraps tinysecp.verifySchnorr', () => {
+        assert.strictEqual(keyPair.verifySchnorr(hash, signature), true);
+      });
 
       it('throws if verifySchnorr() not found', () => {
         assert.throws(() => {
           keyPair = ECPairFactory({
             ...tinysecp,
             verifySchnorr: null,
-          }).makeRandom();
+          } as unknown as TinySecp256k1Interface).makeRandom();
           keyPair.verifySchnorr(hash, signature);
         }, /verifySchnorr not supported by ecc library/);
       });
@@ -477,12 +470,12 @@ describe('ECPair', () => {
 
     it('signs with normal R by default', () => {
       const signed = lowRKeyPair.sign(dataToSign);
-      assert.deepStrictEqual(sig, signed);
+      assert.deepStrictEqual(sig, Buffer.from(signed));
     });
 
     it('signs with low R when true is passed', () => {
       const signed = lowRKeyPair.sign(dataToSign, true);
-      assert.deepStrictEqual(sigLowR, signed);
+      assert.deepStrictEqual(sigLowR, Buffer.from(signed));
     });
   });
 });

@@ -1,6 +1,6 @@
 'use strict';
 Object.defineProperty(exports, '__esModule', { value: true });
-exports.testEcc = void 0;
+exports.testEcc = testEcc;
 const h = (hex) => Buffer.from(hex, 'hex');
 function testEcc(ecc) {
   assert(
@@ -226,7 +226,6 @@ function testEcc(ecc) {
     );
   }
 }
-exports.testEcc = testEcc;
 function assert(bool) {
   if (!bool) throw new Error('ecc library invalid');
 }

@@ -1,39 +1,38 @@
-/// <reference types="node" />
 import { Network } from './networks';
 import * as networks from './networks';
 export { networks };
 interface ECPairOptions {
     compressed?: boolean;
     network?: Network;
-    rng?(arg0: number): Buffer;
+    rng?(arg0: number): Uint8Array;
 }
 export interface Signer {
-    publicKey: Buffer;
+    publicKey: Uint8Array;
     network?: any;
-    sign(hash: Buffer, lowR?: boolean): Buffer;
-    getPublicKey?(): Buffer;
+    sign(hash: Uint8Array, lowR?: boolean): Uint8Array;
+    getPublicKey?(): Uint8Array;
 }
 export interface SignerAsync {
-    publicKey: Buffer;
+    publicKey: Uint8Array;
     network?: any;
-    sign(hash: Buffer, lowR?: boolean): Promise<Buffer>;
-    getPublicKey?(): Buffer;
+    sign(hash: Uint8Array, lowR?: boolean): Promise<Uint8Array>;
+    getPublicKey?(): Uint8Array;
 }
 export interface ECPairInterface extends Signer {
     compressed: boolean;
     network: Network;
     lowR: boolean;
-    privateKey?: Buffer;
+    privateKey?: Uint8Array;
     toWIF(): string;
-    tweak(t: Buffer): ECPairInterface;
-    verify(hash: Buffer, signature: Buffer): boolean;
-    verifySchnorr(hash: Buffer, signature: Buffer): boolean;
-    signSchnorr(hash: Buffer): Buffer;
+    tweak(t: Uint8Array): ECPairInterface;
+    verify(hash: Uint8Array, signature: Uint8Array): boolean;
+    verifySchnorr(hash: Uint8Array, signature: Uint8Array): boolean;
+    signSchnorr(hash: Uint8Array): Uint8Array;
 }
 export interface ECPairAPI {
     isPoint(maybePoint: any): boolean;
-    fromPrivateKey(buffer: Buffer, options?: ECPairOptions): ECPairInterface;
-    fromPublicKey(buffer: Buffer, options?: ECPairOptions): ECPairInterface;
+    fromPrivateKey(buffer: Uint8Array, options?: ECPairOptions): ECPairInterface;
+    fromPublicKey(buffer: Uint8Array, options?: ECPairOptions): ECPairInterface;
     fromWIF(wifString: string, network?: Network | Network[]): ECPairInterface;
     makeRandom(options?: ECPairOptions): ECPairInterface;
 }

@@ -2,19 +2,10 @@
   "compilerOptions": {
     "target": "ESNEXT",
     "module": "commonjs",
-    "outDir": "../",
-    "declaration": false,
-    "rootDir": "../",
-    "rootDirs": [
-      "../src",
-      "../types"
-    ],
-    "types": [
-      "node",
-      "mocha"
-    ],
+    "outDir": "./src",
+    "rootDir": "./ts_src",
+    "types": ["node"],
     "allowJs": false,
-    "resolveJsonModule": true,
     "strict": true,
     "noImplicitAny": true,
     "strictNullChecks": true,
@@ -23,18 +14,10 @@
     "strictPropertyInitialization": true,
     "noImplicitThis": true,
     "alwaysStrict": true,
-    "esModuleInterop": false,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "baseUrl": ".",
-    "paths": {
-      "../src/*": ["../ts_src/*"]
-    }
+    "skipLibCheck": true
   },
-  "include": [
-      "./**/*.ts"
-  ],
-  "exclude": [
-      "../ts_src/**/*.ts"
-  ]
+  "include": ["ts_src/**/*.ts"],
+  "exclude": ["**/*.spec.ts", "node_modules/**/*"]
 }

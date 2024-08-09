@@ -7,7 +7,7 @@
       "network": "bitcoin",
       "address": "1BgGZ9tcN4rm9KBzDn7KprQz87SZ26SAMH",
       "WIF": "KwDiBf89QgGbjEhKnhXJuH7LrciVrZi3qYjgd9M7rFU73sVHnoWn",
-      "tweak":  "KyGComs4RrHnqnn5ku3WxA6CVFmHJV61bm8V36Uu4WMsRjjdeAVr"
+      "tweak": "KyGComs4RrHnqnn5ku3WxA6CVFmHJV61bm8V36Uu4WMsRjjdeAVr"
     },
     {
       "d": "0000000000000000000000000000000000000000000000000000000000000001",
@@ -16,7 +16,7 @@
       "network": "bitcoin",
       "address": "1EHNa6Q4Jz2uvNExL497mE43ikXhwF6kZm",
       "WIF": "5HpHagT65TZzG1PH3CSu63k8DbpvD8s5ip4nEB3kEsreAnchuDf",
-      "tweak":  "5JH8fEnnBcdtAhH74buE8WhbmvBwSiFjH2qpb1LTkPWehzrbBaF"
+      "tweak": "5JH8fEnnBcdtAhH74buE8WhbmvBwSiFjH2qpb1LTkPWehzrbBaF"
     },
     {
       "d": "2bfe58ab6d9fd575bdc3a624e4825dd2b375d64ac033fbc46ea79dbab4f69a3e",
@@ -25,7 +25,7 @@
       "network": "bitcoin",
       "address": "1MasfEKgSiaSeri2C6kgznaqBNtyrZPhNq",
       "WIF": "KxhEDBQyyEFymvfJD96q8stMbJMbZUb6D1PmXqBWZDU2WvbvVs9o",
-      "tweak":  "KwUyUow4TNzozBuaxR5VAQRw99PFQqYZXFn5ZN7Cm2FPeRvXwoAD"
+      "tweak": "KwUyUow4TNzozBuaxR5VAQRw99PFQqYZXFn5ZN7Cm2FPeRvXwoAD"
     },
     {
       "d": "6c4313b03f2e7324d75e642f0ab81b734b724e13fec930f309e222470236d66b",
@@ -34,7 +34,7 @@
       "network": "bitcoin",
       "address": "1LwwMWdSEMHJ2dMhSvAHZ3g95tG2UBv9jg",
       "WIF": "KzrA86mCVMGWnLGBQu9yzQa32qbxb5dvSK4XhyjjGAWSBKYX4rHx",
-      "tweak":  "L4LVynF3Ra6tpU14rMjx2bjNTbKpathPA1KcKVch8UpuGJgHakpw"
+      "tweak": "L4LVynF3Ra6tpU14rMjx2bjNTbKpathPA1KcKVch8UpuGJgHakpw"
     },
     {
       "d": "6c4313b03f2e7324d75e642f0ab81b734b724e13fec930f309e222470236d66b",
@@ -43,7 +43,7 @@
       "network": "bitcoin",
       "address": "1zXcfvKCLgsFdJDYPuqpu1sF3q92tnnUM",
       "WIF": "5JdxzLtFPHNe7CAL8EBC6krdFv9pwPoRo4e3syMZEQT9srmK8hh",
-      "tweak":  "5KRotqK8oMBrMGdievBdwHUj23Lfsj5AYwuFM3rmtYE7rmwTEsf"
+      "tweak": "5KRotqK8oMBrMGdievBdwHUj23Lfsj5AYwuFM3rmtYE7rmwTEsf"
     },
     {
       "d": "6c4313b03f2e7324d75e642f0ab81b734b724e13fec930f309e222470236d66b",
@@ -52,7 +52,7 @@
       "network": "testnet",
       "address": "n1TteZiR3NiYojqKAV8fNxtTwsrjM7kVdj",
       "WIF": "cRD9b1m3vQxmwmjSoJy7Mj56f4uNFXjcWMCzpQCEmHASS4edEwXv",
-      "tweak":  "cUhVShEtrdo9yuULEmZ5PvES5pdEFLo5E3U5Rv5CdbUuX3pgcvk2"
+      "tweak": "cUhVShEtrdo9yuULEmZ5PvES5pdEFLo5E3U5Rv5CdbUuX3pgcvk2"
     },
     {
       "d": "6c4313b03f2e7324d75e642f0ab81b734b724e13fec930f309e222470236d66b",
@@ -61,7 +61,7 @@
       "network": "testnet",
       "address": "mgWUuj1J1N882jmqFxtDepEC73Rr22E9GU",
       "WIF": "92Qba5hnyWSn5Ffcka56yMQauaWY6ZLd91Vzxbi4a9CCetaHtYj",
-      "tweak":  "93CSUa8gPaFzKL91HG5Yot2gfhhP2tcMttmCRgDHEGyAdoiN1CE"
+      "tweak": "93CSUa8gPaFzKL91HG5Yot2gfhhP2tcMttmCRgDHEGyAdoiN1CE"
     },
     {
       "d": "fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364140",
@@ -70,7 +70,7 @@
       "network": "bitcoin",
       "address": "1GrLCmVQXoyJXaPJQdqssNqwxvha1eUo2E",
       "WIF": "L5oLkpV3aqBjhki6LmvChTCV6odsp4SXM6FfU2Gppt5kFLaHLuZ9",
-      "tweak":  "KyGComs4RrHnqnn5ku3WxA6CVFmHJV61bm8V36Uu4WMsRjjdeAVr"
+      "tweak": "KyGComs4RrHnqnn5ku3WxA6CVFmHJV61bm8V36Uu4WMsRjjdeAVr"
     }
   ],
   "invalid": {
@@ -88,14 +88,14 @@
         "d": "fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364142"
       },
       {
-        "exception": "Expected property \"compressed\" of type \\?Boolean, got Number 2",
+        "exception": "ValiError: Invalid type: Expected boolean but received 2",
         "d": "0000000000000000000000000000000000000000000000000000000000000001",
         "options": {
           "compressed": 2
         }
       },
       {
-        "exception": "Expected property \"network.messagePrefix\" of type Buffer|String, got undefined",
+        "exception": "ValiError: Invalid type: Expected string | Uint8Array but received undefined",
         "d": "0000000000000000000000000000000000000000000000000000000000000001",
         "options": {
           "network": {}
@@ -104,12 +104,12 @@
     ],
     "fromPublicKey": [
       {
-        "exception": "Expected isPoint, got Buffer",
+        "exception": "Error: Point not on the curve",
         "Q": "",
         "options": {}
       },
       {
-        "exception": "Expected property \"network.messagePrefix\" of type Buffer|String, got undefined",
+        "exception": "ValiError: Invalid type: Expected string | Uint8Array but received undefined",
         "Q": "044289801366bcee6172b771cf5a7f13aaecd237a0b9a1ff9d769cabc2e6b70a34cec320a0565fb7caf11b1ca2f445f9b7b012dda5718b3cface369ee3a034ded6",
         "options": {
           "network": {}
@@ -117,7 +117,7 @@
       },
       {
         "description": "Bad X coordinate (== P)",
-        "exception": "Expected isPoint, got Buffer",
+        "exception": "Error: Point not on the curve",
         "Q": "040000000000000000000000000000000000000000000000000000000000000001fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f",
         "options": {}
       }

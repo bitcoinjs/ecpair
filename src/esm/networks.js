@@ -1,10 +1,4 @@
-// https://en.bitcoin.it/wiki/List_of_address_prefixes
-import * as v from 'valibot';
-import { NetworkSchema } from './types';
-
-export type Network = v.InferOutput<typeof NetworkSchema>;
-
-export const bitcoin: Network = {
+export const bitcoin = {
   messagePrefix: '\x18Bitcoin Signed Message:\n',
   bech32: 'bc',
   bip32: {
@@ -15,8 +9,7 @@ export const bitcoin: Network = {
   scriptHash: 0x05,
   wif: 0x80,
 };
-
-export const testnet: Network = {
+export const testnet = {
   messagePrefix: '\x18Bitcoin Signed Message:\n',
   bech32: 'tb',
   bip32: {
