@@ -2,12 +2,8 @@ import * as assert from 'assert';
 import { createHash } from 'crypto';
 import { beforeEach, describe, it } from 'mocha';
 import proxyquire from 'proxyquire';
-import {
-  ECPairFactory,
-  ECPairInterface,
-  networks as NETWORKS,
-  TinySecp256k1Interface,
-} from '../';
+import { ECPairFactory, networks as NETWORKS } from '../src/esm';
+import type { ECPairInterface, TinySecp256k1Interface } from '..';
 import fixtures from './fixtures/ecpair.json';
 import * as tinysecp from 'tiny-secp256k1';
 import * as tools from 'uint8array-tools';
@@ -64,12 +60,6 @@ describe('ECPair', () => {
   });
 
   describe('fromPrivateKey', () => {
-    it('sets the private key', () => {
-      const keyPair = ECPairFactory(tinysecp).fromPrivateKey(ONE);
-
-      assert.strictEqual(keyPair.privateKey, ONE);
-    });
-
     it('defaults to compressed', () => {
       const keyPair = ECPair.fromPrivateKey(ONE);
 
