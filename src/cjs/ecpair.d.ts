@@ -22,13 +22,11 @@ export interface Signer {
     publicKey: Uint8Array;
     network?: any;
     sign(hash: Uint8Array, lowR?: boolean): Uint8Array;
-    getPublicKey?(): Uint8Array;
 }
 export interface SignerAsync {
     publicKey: Uint8Array;
     network?: any;
     sign(hash: Uint8Array, lowR?: boolean): Promise<Uint8Array>;
-    getPublicKey?(): Uint8Array;
 }
 export interface ECPairInterface extends Signer {
     compressed: boolean;

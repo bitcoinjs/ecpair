@@ -49,7 +49,6 @@ exports.ECPairFactory = ECPairFactory;
 const networks = __importStar(require('./networks.cjs'));
 exports.networks = networks;
 const types = __importStar(require('./types.cjs'));
-// import randomBytes from 'randombytes';
 const wif = __importStar(require('wif'));
 const testecc_1 = require('./testecc.cjs');
 const v = __importStar(require('valibot'));
@@ -58,15 +57,15 @@ const ECPairOptionsSchema = v.optional(
   v.object({
     compressed: v.optional(v.boolean()),
     network: v.optional(types.NetworkSchema),
-    //https://github.com/fabian-hiller/valibot/issues/243#issuecomment-2182514063
+    // https://github.com/fabian-hiller/valibot/issues/243#issuecomment-2182514063
     rng: v.optional(
       v.pipe(
         v.instance(Function),
         v.transform((func) => {
           return (arg) => {
             const parsedArg = v.parse(v.optional(v.number()), arg);
-            const return_ = func(parsedArg);
-            const parsedReturn = v.parse(v.instance(Uint8Array), return_);
+            const returnedValue = func(parsedArg);
+            const parsedReturn = v.parse(v.instance(Uint8Array), returnedValue);
             return parsedReturn;
           };
         }),
@@ -75,7 +74,7 @@ const ECPairOptionsSchema = v.optional(
   }),
 );
 const toXOnly = (pubKey) =>
-  pubKey.length === 32 ? pubKey : pubKey.slice(1, 33);
+  pubKey.length === 32 ? pubKey : pubKey.subarray(1, 33);
 function ECPairFactory(ecc) {
   (0, testecc_1.testEcc)(ecc);
   function isPoint(maybePoint) {
@@ -142,8 +141,7 @@ function ECPairFactory(ecc) {
       this.compressed =
         options.compressed === undefined ? true : options.compressed;
       this.network = options.network || networks.bitcoin;
-      if (__Q !== undefined)
-        this.__Q = Uint8Array.from(ecc.pointCompress(__Q, this.compressed));
+      if (__Q !== undefined) this.__Q = ecc.pointCompress(__Q, this.compressed);
     }
     get privateKey() {
       return this.__D;
@@ -229,7 +227,7 @@ function ECPairFactory(ecc) {
         : this.privateKey;
       const tweakedPrivateKey = ecc.privateAdd(privateKey, t);
       if (!tweakedPrivateKey) throw new Error('Invalid tweaked private key!');
-      return fromPrivateKey(Uint8Array.from(tweakedPrivateKey), {
+      return fromPrivateKey(tweakedPrivateKey, {
         network: this.network,
         compressed: this.compressed,
       });

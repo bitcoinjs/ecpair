@@ -1,7 +1,6 @@
 import { Network } from './networks';
 import * as networks from './networks';
 import * as types from './types';
-// import randomBytes from 'randombytes';
 import * as wif from 'wif';
 import { testEcc } from './testecc';
 export { networks };
@@ -12,15 +11,15 @@ const ECPairOptionsSchema = v.optional(
   v.object({
     compressed: v.optional(v.boolean()),
     network: v.optional(types.NetworkSchema),
-    //https://github.com/fabian-hiller/valibot/issues/243#issuecomment-2182514063
+    // https://github.com/fabian-hiller/valibot/issues/243#issuecomment-2182514063
     rng: v.optional(
       v.pipe(
         v.instance(Function),
         v.transform((func) => {
           return (arg?: number) => {
             const parsedArg = v.parse(v.optional(v.number()), arg);
-            const return_ = func(parsedArg);
-            const parsedReturn = v.parse(v.instance(Uint8Array), return_);
+            const returnedValue = func(parsedArg);
+            const parsedReturn = v.parse(v.instance(Uint8Array), returnedValue);
             return parsedReturn;
           };
         }),
@@ -32,20 +31,18 @@ const ECPairOptionsSchema = v.optional(
 type ECPairOptions = v.InferOutput<typeof ECPairOptionsSchema>;
 
 const toXOnly = (pubKey: Uint8Array) =>
-  pubKey.length === 32 ? pubKey : pubKey.slice(1, 33);
+  pubKey.length === 32 ? pubKey : pubKey.subarray(1, 33);
 
 export interface Signer {
   publicKey: Uint8Array;
   network?: any;
   sign(hash: Uint8Array, lowR?: boolean): Uint8Array;
-  getPublicKey?(): Uint8Array;
 }
 
 export interface SignerAsync {
   publicKey: Uint8Array;
   network?: any;
   sign(hash: Uint8Array, lowR?: boolean): Promise<Uint8Array>;
-  getPublicKey?(): Uint8Array;
 }
 
 export interface ECPairInterface extends Signer {
@@ -190,8 +187,7 @@ export function ECPairFactory(ecc: TinySecp256k1Interface): ECPairAPI {
         options.compressed === undefined ? true : options.compressed;
       this.network = options.network || networks.bitcoin;
 
-      if (__Q !== undefined)
-        this.__Q = Uint8Array.from(ecc.pointCompress(__Q, this.compressed));
+      if (__Q !== undefined) this.__Q = ecc.pointCompress(__Q, this.compressed);
     }
 
     get privateKey(): Uint8Array | undefined {
@@ -290,7 +286,7 @@ export function ECPairFactory(ecc: TinySecp256k1Interface): ECPairAPI {
       const tweakedPrivateKey = ecc.privateAdd(privateKey!, t);
       if (!tweakedPrivateKey) throw new Error('Invalid tweaked private key!');
 
-      return fromPrivateKey(Uint8Array.from(tweakedPrivateKey), {
+      return fromPrivateKey(tweakedPrivateKey, {
         network: this.network,
         compressed: this.compressed,
       });

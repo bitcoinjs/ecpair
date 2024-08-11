@@ -304,36 +304,32 @@ describe('ECPair', () => {
         if (h === hash) {
           assert.strictEqual(h, hash);
           return signature;
-        } else {
-          return tinysecp.sign(h, d);
         }
+        return tinysecp.sign(h, d);
       };
 
       const mockSignSchnorr = (h: any, d: any, e: any) => {
         if (h === hash) {
           assert.strictEqual(h, hash);
           return signature;
-        } else {
-          return tinysecp.signSchnorr(h, d, e);
         }
+        return tinysecp.signSchnorr(h, d, e);
       };
 
       const mockVerify = (h: any, Q: any, sig: any) => {
         if (h === hash && sig === signature) {
           assert.strictEqual(h, hash);
           return true;
-        } else {
-          return tinysecp.verify(h, Q, sig);
         }
+        return tinysecp.verify(h, Q, sig);
       };
 
       const mockVerifySchnorr = (h: any, Q: any, sig: any) => {
         if (h === hash && sig === signature) {
           assert.strictEqual(h, hash);
           return true;
-        } else {
-          return tinysecp.verifySchnorr(h, Q, sig);
         }
+        return tinysecp.verifySchnorr(h, Q, sig);
       };
 
       // @ts-ignore
