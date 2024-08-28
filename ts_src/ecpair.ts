@@ -155,6 +155,17 @@ export function ECPairFactory(ecc: TinySecp256k1Interface): ECPairAPI {
     });
   }
 
+  /**
+   * Generates a random ECPairInterface.
+   * 
+   * Uses `crypto.getRandomValues` under the hood for options.rng function, which is still an experimental feature as of Node.js 18.19.0. To work around this you can do one of the following:
+   * 1. Use a polyfill for crypto.getRandomValues()
+   * 2. Use the `--experimental-global-webcrypto` flag when running node.js.
+   * 3. Pass in a custom rng function to generate random values.
+   *
+   * @param {ECPairOptions} options - Options for the ECPairInterface.
+   * @return {ECPairInterface} A random ECPairInterface.
+   */
   function makeRandom(options?: ECPairOptions): ECPairInterface {
     v.parse(ECPairOptionsSchema, options);
     if (options === undefined) options = {};

@@ -1,8 +1,8 @@
 import * as assert from 'assert';
 import { createHash } from 'crypto';
 import { beforeEach, describe, it } from 'mocha';
-import { ECPairFactory, networks as NETWORKS } from '../src/esm';
-import type { ECPairInterface, TinySecp256k1Interface } from '..';
+import { ECPairFactory, networks as NETWORKS } from 'ecpair';
+import type { ECPairInterface, TinySecp256k1Interface } from 'ecpair';
 import fixtures from './fixtures/ecpair.json';
 import * as tinysecp from 'tiny-secp256k1';
 import * as tools from 'uint8array-tools';
@@ -196,7 +196,7 @@ describe('ECPair', () => {
 
     it('allows a custom RNG to be used', () => {
       const keyPair = ECPair.makeRandom({
-        rng: (size: number): Buffer => {
+        rng: (size?: number): Uint8Array => {
           return d.slice(0, size);
         },
       });
@@ -234,7 +234,7 @@ describe('ECPair', () => {
     it('loops until d is within interval [1, n) : 1', () => {
       let counter = 0;
       const rng = () => {
-        if (counter++ == 0) return ZERO;
+        if (counter++ === 0) return ZERO;
         return ONE;
       };
 
@@ -343,7 +343,7 @@ describe('ECPair', () => {
     });
 
     describe('signing', () => {
-      it('wraps tinysecp.sign', function (this: any): void {
+      it('wraps tinysecp.sign', () => {
         assert.deepStrictEqual(keyPair.sign(hash), signature);
       });
 
@@ -363,7 +363,7 @@ describe('ECPair', () => {
         });
         const h = Buffer.alloc(32, 2);
         const schnorrsig = Buffer.from(
-          '4bc68cbd7c0b769b2dff262e9971756da7ab78402ed6f710c3788ce815e9c06a011bab7a527e33c6a1df0dad5ed05a04b8f3be656d8578502fef07f8215d37db',
+          'cde43b67d4326fa6ff1b40711615b692a997e193cc512f3a40e5cd4a5c9be18ca871296fa967f4dc13634c70d965223d637546a0b519050bae82c76d3ae627ff',
           'hex',
         );
 
