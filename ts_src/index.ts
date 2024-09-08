@@ -1,10 +1,10 @@
 export {
   ECPairFactory as default,
   ECPairFactory,
-  Signer,
-  SignerAsync,
-  ECPairAPI,
-  ECPairInterface,
-  TinySecp256k1Interface,
+  type Signer,
+  type SignerAsync,
+  type ECPairAPI,
+  type ECPairInterface,
+  type TinySecp256k1Interface,
   networks,
 } from './ecpair';

@@ -3,6 +3,11 @@
 
 A library for managing SECP256k1 keypairs written in TypeScript with transpiled JavaScript committed to git.
 
+**Note** `ECPair`.makeRandom() uses the `crypto.getRandomValues` if there is no custom `rng` function provided. This API currently is still an experimental feature as of Node.js 18.19.0. To work around this you can do one of the following:
+1. Use a polyfill for crypto.getRandomValues()
+2. Use the `--experimental-global-webcrypto` flag when running node.js.
+3. Pass in a custom rng function to generate random values.
+
 ## Example
 
 TypeScript
