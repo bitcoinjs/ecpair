@@ -1,10 +1,10 @@
-import * as networks from './networks';
-import * as types from './types';
+import * as networks from './networks.js';
+import * as types from './types.js';
 import * as wif from 'wif';
-import { testEcc } from './testecc';
-export { networks };
+import { testEcc } from './testecc.js';
 import * as v from 'valibot';
 import * as tools from 'uint8array-tools';
+export { networks };
 const ECPairOptionsSchema = v.optional(
   v.object({
     compressed: v.optional(v.boolean()),
@@ -17,8 +17,7 @@ const ECPairOptionsSchema = v.optional(
           return (arg) => {
             const parsedArg = v.parse(v.optional(v.number()), arg);
             const returnedValue = func(parsedArg);
-            const parsedReturn = v.parse(v.instance(Uint8Array), returnedValue);
-            return parsedReturn;
+            return v.parse(v.instance(Uint8Array), returnedValue);
           };
         }),
       ),
@@ -67,6 +66,17 @@ export function ECPairFactory(ecc) {
       network: network,
     });
   }
+  /**
+   * Generates a random ECPairInterface.
+   *
+   * Uses `crypto.getRandomValues` under the hood for options.rng function, which is still an experimental feature as of Node.js 18.19.0. To work around this you can do one of the following:
+   * 1. Use a polyfill for crypto.getRandomValues()
+   * 2. Use the `--experimental-global-webcrypto` flag when running node.js.
+   * 3. Pass in a custom rng function to generate random values.
+   *
+   * @param {ECPairOptions} options - Options for the ECPairInterface.
+   * @return {ECPairInterface} A random ECPairInterface.
+   */
   function makeRandom(options) {
     v.parse(ECPairOptionsSchema, options);
     if (options === undefined) options = {};

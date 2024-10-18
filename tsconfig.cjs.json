@@ -3,8 +3,9 @@
   "compilerOptions": {
     "declaration": true,
     "emitDeclarationOnly": false,
+    "target": "ES6",
     "esModuleInterop": true,
     "outDir": "src/cjs",
-    "module": "commonjs"
+    "module": "CommonJS"
   }
 }

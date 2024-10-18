@@ -1,7 +1,7 @@
-import { Network } from './networks';
-import * as networks from './networks';
-export { networks };
+import * as networks from './networks.cjs';
+import { Network } from './networks.cjs';
 import * as v from 'valibot';
+export { networks };
 declare const ECPairOptionsSchema: v.OptionalSchema<v.ObjectSchema<{
     readonly compressed: v.OptionalSchema<v.BooleanSchema<undefined>, never>;
     readonly network: v.OptionalSchema<v.ObjectSchema<{

@@ -1,6 +1,6 @@
 // https://en.bitcoin.it/wiki/List_of_address_prefixes
 import * as v from 'valibot';
-import { NetworkSchema } from './types';
+import { NetworkSchema } from './types.js';
 
 export type Network = v.InferOutput<typeof NetworkSchema>;
 

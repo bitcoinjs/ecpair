@@ -50,7 +50,7 @@ const networks = __importStar(require('./networks.cjs'));
 exports.networks = networks;
 const types = __importStar(require('./types.cjs'));
 const wif = __importStar(require('wif'));
-const testecc_1 = require('./testecc.cjs');
+const testecc_js_1 = require('./testecc.cjs');
 const v = __importStar(require('valibot'));
 const tools = __importStar(require('uint8array-tools'));
 const ECPairOptionsSchema = v.optional(
@@ -65,8 +65,7 @@ const ECPairOptionsSchema = v.optional(
           return (arg) => {
             const parsedArg = v.parse(v.optional(v.number()), arg);
             const returnedValue = func(parsedArg);
-            const parsedReturn = v.parse(v.instance(Uint8Array), returnedValue);
-            return parsedReturn;
+            return v.parse(v.instance(Uint8Array), returnedValue);
           };
         }),
       ),
@@ -76,7 +75,7 @@ const ECPairOptionsSchema = v.optional(
 const toXOnly = (pubKey) =>
   pubKey.length === 32 ? pubKey : pubKey.subarray(1, 33);
 function ECPairFactory(ecc) {
-  (0, testecc_1.testEcc)(ecc);
+  (0, testecc_js_1.testEcc)(ecc);
   function isPoint(maybePoint) {
     return ecc.isPoint(maybePoint);
   }
@@ -115,6 +114,17 @@ function ECPairFactory(ecc) {
       network: network,
     });
   }
+  /**
+   * Generates a random ECPairInterface.
+   *
+   * Uses `crypto.getRandomValues` under the hood for options.rng function, which is still an experimental feature as of Node.js 18.19.0. To work around this you can do one of the following:
+   * 1. Use a polyfill for crypto.getRandomValues()
+   * 2. Use the `--experimental-global-webcrypto` flag when running node.js.
+   * 3. Pass in a custom rng function to generate random values.
+   *
+   * @param {ECPairOptions} options - Options for the ECPairInterface.
+   * @return {ECPairInterface} A random ECPairInterface.
+   */
   function makeRandom(options) {
     v.parse(ECPairOptionsSchema, options);
     if (options === undefined) options = {};
@@ -128,11 +138,6 @@ function ECPairFactory(ecc) {
     return fromPrivateKey(d, options);
   }
   class ECPair {
-    __D;
-    __Q;
-    compressed;
-    network;
-    lowR;
     constructor(__D, __Q, options) {
       this.__D = __D;
       this.__Q = __Q;
