@@ -3,12 +3,12 @@
   "version": "3.0.1-rc.0",
   "description": "Client-side Bitcoin JavaScript library ECPair",
   "type": "module",
-  "main": "src/cjs/index.js",
+  "main": "src/cjs/index.cjs",
   "module": "src/esm/index.js",
   "types": "src/cjs/index.d.ts",
   "exports": {
     ".": {
-      "require": "./src/cjs/index.js",
+      "require": "./src/cjs/index.cjs",
       "import": "./src/esm/index.js",
       "types": "./src/cjs/index.d.ts"
     }
@@ -33,7 +33,7 @@
     "coverage": "npm run build && npm run nobuild:coverage",
     "format": "npm run prettier -- --write",
     "formatjs": "npm run prettierjs -- --write",
-    "format:ci": "npm run prettier -- --check && npm run prettierjs -- --check",
+    "format:ci": "npm run prettier -- --check && npm run prettiercjs -- --check && npm run prettierjs -- --check",
     "gitdiff:ci": "npm run build && git diff --exit-code",
     "lint": "tslint -p tsconfig.json -c tslint.json",
     "lint:tests": "tslint -p test/tsconfig.json -c tslint.json",
@@ -44,6 +44,7 @@
     "nobuild:unit": "npm run mocha:ts -- 'test/*.ts'",
     "prettier": "prettier \"ts_src/**/*.ts\" \"test/**/*.ts\" --ignore-path ./.prettierignore",
     "prettierjs": "prettier \"src/**/*.js\" --ignore-path ./.prettierignore",
+    "prettiercjs": "prettier \"src/**/*.cjs\" --ignore-path ./.prettierignore",
     "test": "npm run build && npm run format:ci && npm run lint && npm run nobuild:coverage",
     "unit": "npm run build && npm run nobuild:unit"
   },
