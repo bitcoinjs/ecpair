@@ -3,12 +3,12 @@
   "version": "3.0.1-rc.0",
   "description": "Client-side Bitcoin JavaScript library ECPair",
   "type": "module",
-  "main": "src/cjs/index.cjs",
+  "main": "src/cjs/index.js",
   "module": "src/esm/index.js",
   "types": "src/cjs/index.d.ts",
   "exports": {
     ".": {
-      "require": "./src/cjs/index.cjs",
+      "require": "./src/cjs/index.js",
       "import": "./src/esm/index.js",
       "types": "./src/cjs/index.d.ts"
     }
@@ -26,7 +26,6 @@
   "scripts": {
     "audit": "NPM_AUDIT_IGNORE_DEV=1 NPM_AUDIT_IGNORE_LEVEL=low npm-audit-whitelister .npm-audit-whitelister.json",
     "build": "npm run clean && tsc -p ./tsconfig.json && tsc -p tsconfig.cjs.json && npm run formatjs",
-    "postbuild": "find src/cjs -type f -name \"*.js\" -exec bash -c 'mv \"$0\" \"${0%.js}.cjs\"' {} \\; && chmod +x ./fixup.cjs && node fixup.cjs",
     "clean": "rimraf src",
     "clean:jstests": "rimraf 'test/**/*.js'",
     "coverage-report": "npm run build && npm run nobuild:coverage-report",
@@ -41,7 +40,7 @@
     "mocha:ts": "mocha --recursive",
     "nobuild:coverage-report": "c8 report --reporter=lcov",
     "nobuild:coverage-html": "c8 report --reporter=html",
-    "nobuild:coverage": "c8 --check-coverage --exclude='**/*.cjs' --branches 90 --functions 90 --lines 90 npm run unit",
+    "nobuild:coverage": "c8 --check-coverage --exclude='**/*.js' --branches 90 --functions 90 --lines 90 npm run unit",
     "nobuild:unit": "npm run mocha:ts -- 'test/*.ts'",
     "prettier": "prettier \"ts_src/**/*.ts\" \"test/**/*.ts\" --ignore-path ./.prettierignore",
     "prettierjs": "prettier \"src/**/*.js\" --ignore-path ./.prettierignore",

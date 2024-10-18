@@ -46,11 +46,11 @@ var __importStar =
 Object.defineProperty(exports, '__esModule', { value: true });
 exports.networks = void 0;
 exports.ECPairFactory = ECPairFactory;
-const networks = __importStar(require('./networks.js.cjs'));
+const networks = __importStar(require('./networks.js'));
 exports.networks = networks;
-const types = __importStar(require('./types.js.cjs'));
+const types = __importStar(require('./types.js'));
 const wif = __importStar(require('wif'));
-const testecc_js_1 = require('./testecc.js.cjs');
+const testecc_js_1 = require('./testecc.js');
 const v = __importStar(require('valibot'));
 const tools = __importStar(require('uint8array-tools'));
 const ECPairOptionsSchema = v.optional(
