@@ -20,5 +20,7 @@ const processFiles = (dir) => {
   });
 };
 
-const dir = path.join(__dirname, 'src', 'cjs');
-processFiles(dir);
+// You don't need this anymore since we add .js to the imports.
+
+//const dir = path.join(__dirname, 'src', 'cjs');
+//processFiles(dir);
