@@ -46,11 +46,11 @@ var __importStar =
 Object.defineProperty(exports, '__esModule', { value: true });
 exports.networks = void 0;
 exports.ECPairFactory = ECPairFactory;
-const networks = __importStar(require('./networks.js'));
+const networks = __importStar(require('./networks.cjs'));
 exports.networks = networks;
-const types = __importStar(require('./types.js'));
+const types = __importStar(require('./types.cjs'));
 const wif = __importStar(require('wif'));
-const testecc_js_1 = require('./testecc.js');
+const testecc_js_1 = require('./testecc.cjs');
 const v = __importStar(require('valibot'));
 const tools = __importStar(require('uint8array-tools'));
 const ECPairOptionsSchema = v.optional(
@@ -138,11 +138,6 @@ function ECPairFactory(ecc) {
     return fromPrivateKey(d, options);
   }
   class ECPair {
-    __D;
-    __Q;
-    compressed;
-    network;
-    lowR;
     constructor(__D, __Q, options) {
       this.__D = __D;
       this.__Q = __Q;

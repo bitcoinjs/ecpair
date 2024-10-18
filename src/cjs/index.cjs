@@ -1,7 +1,7 @@
 'use strict';
 Object.defineProperty(exports, '__esModule', { value: true });
 exports.networks = exports.ECPairFactory = exports.default = void 0;
-var ecpair_js_1 = require('./ecpair.js');
+var ecpair_js_1 = require('./ecpair.cjs');
 Object.defineProperty(exports, 'default', {
   enumerable: true,
   get: function () {
