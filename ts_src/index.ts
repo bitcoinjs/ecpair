@@ -7,4 +7,4 @@ export {
   type ECPairInterface,
   type TinySecp256k1Interface,
   networks,
-} from './ecpair';
+} from './ecpair.js';

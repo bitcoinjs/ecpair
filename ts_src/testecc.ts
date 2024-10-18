@@ -1,4 +1,4 @@
-import { TinySecp256k1Interface } from './ecpair';
+import { TinySecp256k1Interface } from './ecpair.js';
 
 const h = (hex: string): Buffer => Buffer.from(hex, 'hex');
 
