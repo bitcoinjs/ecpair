@@ -50,7 +50,7 @@ const networks = __importStar(require('./networks.cjs'));
 exports.networks = networks;
 const types = __importStar(require('./types.cjs'));
 const wif = __importStar(require('wif'));
-const testecc_js_1 = require('./testecc.cjs');
+// import { testEcc } from './testecc.cjs';
 const v = __importStar(require('valibot'));
 const tools = __importStar(require('uint8array-tools'));
 const ECPairOptionsSchema = v.optional(
@@ -75,7 +75,7 @@ const ECPairOptionsSchema = v.optional(
 const toXOnly = (pubKey) =>
   pubKey.length === 32 ? pubKey : pubKey.subarray(1, 33);
 function ECPairFactory(ecc) {
-  (0, testecc_js_1.testEcc)(ecc);
+  // testEcc(ecc);
   function isPoint(maybePoint) {
     return ecc.isPoint(maybePoint);
   }

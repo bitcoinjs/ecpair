@@ -1,5 +1,5 @@
 {
-  "name": "ecpair",
+  "name": "@catalabs/ecpair",
   "version": "3.0.0-rc.1",
   "description": "Client-side Bitcoin JavaScript library ECPair",
   "type": "module",

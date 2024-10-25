@@ -1,6 +1,7 @@
 import * as networks from './networks.js';
 import * as types from './types.js';
 import * as wif from 'wif';
+// import { testEcc } from './testecc.js';
 import * as v from 'valibot';
 import * as tools from 'uint8array-tools';
 export { networks };
@@ -26,6 +27,7 @@ const ECPairOptionsSchema = v.optional(
 const toXOnly = (pubKey) =>
   pubKey.length === 32 ? pubKey : pubKey.subarray(1, 33);
 export function ECPairFactory(ecc) {
+  // testEcc(ecc);
   function isPoint(maybePoint) {
     return ecc.isPoint(maybePoint);
   }

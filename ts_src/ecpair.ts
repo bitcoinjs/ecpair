@@ -2,7 +2,7 @@ import * as networks from './networks.js';
 import { Network } from './networks.js';
 import * as types from './types.js';
 import * as wif from 'wif';
-import { testEcc } from './testecc.js';
+// import { testEcc } from './testecc.js';
 import * as v from 'valibot';
 import * as tools from 'uint8array-tools';
 
@@ -96,7 +96,7 @@ interface XOnlyPointAddTweakResult {
 }
 
 export function ECPairFactory(ecc: TinySecp256k1Interface): ECPairAPI {
-  testEcc(ecc);
+  // testEcc(ecc);
   function isPoint(maybePoint: any): boolean {
     return ecc.isPoint(maybePoint);
   }
