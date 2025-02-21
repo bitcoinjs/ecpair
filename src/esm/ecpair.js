@@ -1,7 +1,7 @@
-import * as networks from './networks';
-import * as types from './types';
+import * as networks from './networks.js';
+import * as types from './types.js';
 import * as wif from 'wif';
-import { testEcc } from './testecc';
+import { testEcc } from './testecc.js';
 export { networks };
 import * as v from 'valibot';
 import * as tools from 'uint8array-tools';
