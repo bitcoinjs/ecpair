@@ -1,1 +1,1 @@
-export { ECPairFactory as default, ECPairFactory, networks } from './ecpair';
+export { ECPairFactory as default, ECPairFactory, networks } from './ecpair.js';
