@@ -9,6 +9,14 @@ const updateRequires = (filePath) => {
   fs.writeFileSync(filePath, content, 'utf8');
 };
 
+const updateImports = (filePath) => {
+  let content = fs.readFileSync(filePath, 'utf8');
+  //replace local imports eg. from './types'; to from './types.js';
+  content = content.replace(/from '\.\/([^']*)'/g, "from './$1.js'");
+
+  fs.writeFileSync(filePath, content, 'utf8');
+};
+
 const processFiles = (dir) => {
   fs.readdirSync(dir).forEach((file) => {
     const filePath = path.join(dir, file);
@@ -16,9 +24,11 @@ const processFiles = (dir) => {
       processFiles(filePath);
     } else if (filePath.endsWith('.cjs')) {
       updateRequires(filePath);
+    } else if (filePath.endsWith('.js')) {
+      updateImports(filePath);
     }
   });
 };
 
-const dir = path.join(__dirname, 'src', 'cjs');
+const dir = path.join(__dirname, 'src');
 processFiles(dir);
