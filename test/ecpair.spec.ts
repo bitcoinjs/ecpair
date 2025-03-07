@@ -1,8 +1,8 @@
 import * as assert from 'assert';
 import { createHash } from 'crypto';
 import { beforeEach, describe, it } from 'mocha';
-import { ECPairFactory, networks as NETWORKS } from 'ecpair';
-import type { ECPairInterface, TinySecp256k1Interface } from 'ecpair';
+import { ECPairFactory, networks as NETWORKS } from '..';
+import type { ECPairInterface, TinySecp256k1Interface } from '..';
 import fixtures from './fixtures/ecpair.json';
 import * as tinysecp from 'tiny-secp256k1';
 import * as tools from 'uint8array-tools';
