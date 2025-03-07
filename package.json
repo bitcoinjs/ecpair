@@ -1,6 +1,6 @@
 {
   "name": "ecpair",
-  "version": "3.0.0-rc.0",
+  "version": "3.0.0",
   "description": "Client-side Bitcoin JavaScript library ECPair",
   "type": "module",
   "main": "src/cjs/index.cjs",
@@ -14,7 +14,7 @@
     }
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=20.0.0"
   },
   "keywords": [
     "bitcoinjs",
