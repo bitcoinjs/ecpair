@@ -57,7 +57,7 @@
   ],
   "dependencies": {
     "uint8array-tools": "^0.0.8",
-    "valibot": "^0.37.0",
+    "valibot": "^1.2.0",
     "wif": "^5.0.0"
   },
   "devDependencies": {
