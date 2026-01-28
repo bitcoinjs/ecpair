@@ -1,9 +1,9 @@
-import * as assert from 'assert';
-import { createHash } from 'crypto';
-import { beforeEach, describe, it } from 'mocha';
-import { ECPairFactory, networks as NETWORKS } from '..';
-import type { ECPairInterface, TinySecp256k1Interface } from '..';
-import fixtures from './fixtures/ecpair.json';
+import assert from 'node:assert';
+import { createHash } from 'node:crypto';
+import { beforeEach, describe, it } from 'vitest';
+import { ECPairFactory, networks as NETWORKS } from '../src/index.js';
+import type { ECPairInterface, TinySecp256k1Interface } from '../src/index.js';
+import fixtures from './fixtures/ecpair.json' with { type: 'json' };
 import * as tinysecp from 'tiny-secp256k1';
 import * as tools from 'uint8array-tools';
 

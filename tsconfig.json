@@ -1,11 +1,10 @@
 {
     "extends": "./tsconfig.base.json",
     "compilerOptions": {
-      "outDir": "src/esm",
-      "esModuleInterop": true,
-      "resolveJsonModule": true,
-      "module": "ESNext",
-      "moduleResolution": "Node"
+        "module": "NodeNext",
+        "moduleResolution": "NodeNext",
+        "outDir": "./build"
     },
+    "include": ["src/**/*.ts", "test/**/*.ts"],
+    "exclude": ["node_modules"]
 }
-  

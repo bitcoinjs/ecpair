@@ -95,7 +95,7 @@
         }
       },
       {
-        "exception": "ValiError: Invalid type: Expected string | Uint8Array but received undefined",
+        "exception": "ValiError: Invalid key: Expected \"messagePrefix\" but received undefined",
         "d": "0000000000000000000000000000000000000000000000000000000000000001",
         "options": {
           "network": {}
@@ -109,7 +109,7 @@
         "options": {}
       },
       {
-        "exception": "ValiError: Invalid type: Expected string | Uint8Array but received undefined",
+        "exception": "ValiError: Invalid key: Expected \"messagePrefix\" but received undefined",
         "Q": "044289801366bcee6172b771cf5a7f13aaecd237a0b9a1ff9d769cabc2e6b70a34cec320a0565fb7caf11b1ca2f445f9b7b012dda5718b3cface369ee3a034ded6",
         "options": {
           "network": {}

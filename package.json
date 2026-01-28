@@ -1,78 +1,142 @@
 {
-  "name": "ecpair",
-  "version": "3.0.0",
-  "description": "Client-side Bitcoin JavaScript library ECPair",
-  "type": "module",
-  "main": "src/cjs/index.cjs",
-  "module": "src/esm/index.js",
-  "types": "src/cjs/index.d.ts",
-  "exports": {
-    ".": {
-      "require": "./src/cjs/index.cjs",
-      "import": "./src/esm/index.js",
-      "types": "./src/cjs/index.d.ts"
+    "name": "@btc-vision/ecpair",
+    "type": "module",
+    "version": "4.0.0",
+    "sideEffects": false,
+    "description": "Universal Bitcoin signer library with branded types and pluggable CryptoBackend",
+    "engines": {
+        "node": ">=24.0.0"
+    },
+    "exports": {
+        ".": {
+            "browser": {
+                "types": "./browser/index.d.ts",
+                "import": "./browser/index.js",
+                "default": "./browser/index.js"
+            },
+            "node": {
+                "types": "./build/index.d.ts",
+                "import": "./build/index.js",
+                "default": "./build/index.js"
+            },
+            "types": "./build/index.d.ts",
+            "import": "./build/index.js",
+            "default": "./build/index.js"
+        },
+        "./browser": {
+            "types": "./browser/index.d.ts",
+            "import": "./browser/index.js",
+            "default": "./browser/index.js"
+        },
+        "./networks": {
+            "types": "./build/networks.d.ts",
+            "import": "./build/networks.js"
+        },
+        "./types": {
+            "types": "./build/types.d.ts",
+            "import": "./build/types.js"
+        },
+        "./branded": {
+            "types": "./build/branded.d.ts",
+            "import": "./build/branded.js"
+        },
+        "./backend": {
+            "types": "./build/backend.d.ts",
+            "import": "./build/backend.js"
+        },
+        "./signer": {
+            "types": "./build/signer.d.ts",
+            "import": "./build/signer.js"
+        },
+        "./noble": {
+            "types": "./build/noble.d.ts",
+            "import": "./build/noble.js"
+        },
+        "./legacy": {
+            "types": "./build/legacy.d.ts",
+            "import": "./build/legacy.js"
+        }
+    },
+    "browser": {
+        "./build/index.js": "./browser/index.js",
+        "./build/index.d.ts": "./browser/index.d.ts"
+    },
+    "keywords": [
+        "bitcoinjs",
+        "bitcoin",
+        "ecpair",
+        "secp256k1",
+        "signer",
+        "schnorr",
+        "ecdsa",
+        "branded-types"
+    ],
+    "license": "MIT",
+    "main": "build/index.js",
+    "types": "build/index.d.ts",
+    "typings": "build/index.d.ts",
+    "module": "build/index.js",
+    "publishConfig": {
+        "access": "public",
+        "tag": "latest"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/btc-vision/ecpair.git"
+    },
+    "files": [
+        "build",
+        "browser"
+    ],
+    "scripts": {
+        "watch": "tsc --watch",
+        "build": "eslint src && tsc --build tsconfig.build.json",
+        "setup": "npm i && npm run build",
+        "browserBuild": "vite build --config vite.config.browser.ts",
+        "audit": "better-npm-audit audit -l high",
+        "clean": "rimraf build",
+        "coverage": "vitest run --coverage",
+        "doc": "typedoc --options typedoc.json",
+        "format": "npm run prettier -- --write",
+        "format:ci": "npm run prettier -- --check",
+        "gitdiff:ci": "npm run build && git diff --exit-code",
+        "lint": "eslint src/**",
+        "lint:tests": "eslint test/**/*.spec.ts",
+        "prettier": "prettier \"src/**/*.ts\" \"test/**/*.ts\" --ignore-path ./.prettierignore",
+        "test": "npm run build && npm run lint && vitest run",
+        "test:watch": "vitest",
+        "unit": "vitest run",
+        "check:circular": "madge --circular --extensions ts,tsx src/",
+        "prebuild": "npm run check:circular"
+    },
+    "dependencies": {
+        "wif": "^5.0.0"
+    },
+    "peerDependencies": {
+        "@noble/curves": ">=2.0.0"
+    },
+    "peerDependenciesMeta": {
+        "@noble/curves": {
+            "optional": true
+        }
+    },
+    "devDependencies": {
+        "@eslint/js": "^9.39.2",
+        "@noble/curves": "^2.0.1",
+        "@types/node": "^25.0.10",
+        "@vitest/coverage-v8": "^4.0.18",
+        "better-npm-audit": "^3.11.0",
+        "eslint": "^9.39.2",
+        "madge": "^8.0.0",
+        "prettier": "^3.8.1",
+        "rimraf": "^6.1.2",
+        "tiny-secp256k1": "^2.2.4",
+        "typedoc": "^0.28.16",
+        "typedoc-material-theme": "^1.4.1",
+        "typescript": "^5.9.3",
+        "typescript-eslint": "^8.54.0",
+        "vite": "^7.3.1",
+        "vite-plugin-dts": "^4.5.4",
+        "vitest": "^4.0.18"
     }
-  },
-  "engines": {
-    "node": ">=20.0.0"
-  },
-  "keywords": [
-    "bitcoinjs",
-    "bitcoin",
-    "browserify",
-    "javascript",
-    "bitcoinjs"
-  ],
-  "scripts": {
-    "audit": "NPM_AUDIT_IGNORE_DEV=1 NPM_AUDIT_IGNORE_LEVEL=low npm-audit-whitelister .npm-audit-whitelister.json",
-    "build": "npm run clean && tsc -p ./tsconfig.json && tsc -p tsconfig.cjs.json && npm run formatjs",
-    "postbuild": "find src/cjs -type f -name \"*.js\" -exec bash -c 'mv \"$0\" \"${0%.js}.cjs\"' {} \\; && chmod +x ./fixup.cjs && node fixup.cjs",
-    "clean": "rimraf src",
-    "clean:jstests": "rimraf 'test/**/*.js'",
-    "coverage-report": "npm run build && npm run nobuild:coverage-report",
-    "coverage-html": "npm run build && npm run nobuild:coverage-html",
-    "coverage": "npm run build && npm run nobuild:coverage",
-    "format": "npm run prettier -- --write",
-    "formatjs": "npm run prettierjs -- --write",
-    "format:ci": "npm run prettier -- --check && npm run prettierjs -- --check",
-    "gitdiff:ci": "npm run build && git diff --exit-code",
-    "lint": "tslint -p tsconfig.json -c tslint.json",
-    "lint:tests": "tslint -p test/tsconfig.json -c tslint.json",
-    "mocha:ts": "mocha --recursive",
-    "nobuild:coverage-report": "c8 report --reporter=lcov",
-    "nobuild:coverage-html": "c8 report --reporter=html",
-    "nobuild:coverage": "c8 --check-coverage --exclude='**/*.cjs' --branches 90 --functions 90 --lines 90 npm run unit",
-    "nobuild:unit": "npm run mocha:ts -- 'test/*.ts'",
-    "prettier": "prettier \"ts_src/**/*.ts\" \"test/**/*.ts\" --ignore-path ./.prettierignore",
-    "prettierjs": "prettier \"src/**/*.js\" --ignore-path ./.prettierignore",
-    "test": "npm run build && npm run format:ci && npm run lint && npm run nobuild:coverage",
-    "unit": "npm run build && npm run nobuild:unit"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/bitcoinjs/ecpair.git"
-  },
-  "files": [
-    "src"
-  ],
-  "dependencies": {
-    "uint8array-tools": "^0.0.8",
-    "valibot": "^0.37.0",
-    "wif": "^5.0.0"
-  },
-  "devDependencies": {
-    "@types/create-hash": "^1.2.2",
-    "@types/mocha": "^5.2.7",
-    "@types/node": "^20.14.2",
-    "@types/wif": "^2.0.2",
-    "c8": "^10.1.2",
-    "mocha": "^10.7.3",
-    "prettier": "^3.3.3",
-    "rimraf": "^2.6.3",
-    "tiny-secp256k1": "^2.2.3",
-    "tslint": "^6.1.3",
-    "tsx": "^4.16.5",
-    "typescript": "^5.0.4"
-  },
-  "license": "MIT"
 }

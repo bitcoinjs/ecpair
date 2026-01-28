@@ -1,0 +1,12 @@
+.vs
+.vscode
+.idea
+.github
+.claude
+docs
+src
+test
+browser
+coverage
+.nyc_output
+*.tsbuildinfo

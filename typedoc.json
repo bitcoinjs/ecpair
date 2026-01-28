@@ -1,0 +1,28 @@
+{
+    "$schema": "https://typedoc.org/schema.json",
+    "entryPoints": [
+        "src/index.ts"
+    ],
+    "out": "docs",
+    "tsconfig": "tsconfig.build.json",
+    "name": "@btc-vision/ecpair",
+    "includeVersion": true,
+    "readme": "README.md",
+    "entryPointStrategy": "resolve",
+    "excludePrivate": true,
+    "excludeInternal": true,
+    "excludeExternals": false,
+    "categorizeByGroup": true,
+    "navigation": {
+        "includeCategories": true,
+        "includeGroups": true
+    },
+    "sort": [
+        "kind",
+        "alphabetical"
+    ],
+    "plugin": [
+        "typedoc-material-theme"
+    ],
+    "themeColor": "#F7931A"
+}
