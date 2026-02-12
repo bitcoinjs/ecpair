@@ -3,20 +3,20 @@ import * as networks from './networks';
 export { networks };
 import * as v from 'valibot';
 declare const ECPairOptionsSchema: v.OptionalSchema<v.ObjectSchema<{
-    readonly compressed: v.OptionalSchema<v.BooleanSchema<undefined>, never>;
+    readonly compressed: v.OptionalSchema<v.BooleanSchema<undefined>, undefined>;
     readonly network: v.OptionalSchema<v.ObjectSchema<{
         readonly messagePrefix: v.UnionSchema<[v.StringSchema<undefined>, v.InstanceSchema<Uint8ArrayConstructor, undefined>], undefined>;
         readonly bech32: v.StringSchema<undefined>;
         readonly bip32: v.ObjectSchema<{
-            readonly public: v.SchemaWithPipe<[v.NumberSchema<undefined>, v.IntegerAction<number, undefined>, v.MinValueAction<number, 0, undefined>, v.MaxValueAction<number, 4294967295, undefined>]>;
-            readonly private: v.SchemaWithPipe<[v.NumberSchema<undefined>, v.IntegerAction<number, undefined>, v.MinValueAction<number, 0, undefined>, v.MaxValueAction<number, 4294967295, undefined>]>;
+            readonly public: v.SchemaWithPipe<readonly [v.NumberSchema<undefined>, v.IntegerAction<number, undefined>, v.MinValueAction<number, 0, undefined>, v.MaxValueAction<number, 4294967295, undefined>]>;
+            readonly private: v.SchemaWithPipe<readonly [v.NumberSchema<undefined>, v.IntegerAction<number, undefined>, v.MinValueAction<number, 0, undefined>, v.MaxValueAction<number, 4294967295, undefined>]>;
         }, undefined>;
-        readonly pubKeyHash: v.SchemaWithPipe<[v.NumberSchema<undefined>, v.IntegerAction<number, undefined>, v.MinValueAction<number, 0, undefined>, v.MaxValueAction<number, 255, undefined>]>;
-        readonly scriptHash: v.SchemaWithPipe<[v.NumberSchema<undefined>, v.IntegerAction<number, undefined>, v.MinValueAction<number, 0, undefined>, v.MaxValueAction<number, 255, undefined>]>;
-        readonly wif: v.SchemaWithPipe<[v.NumberSchema<undefined>, v.IntegerAction<number, undefined>, v.MinValueAction<number, 0, undefined>, v.MaxValueAction<number, 255, undefined>]>;
-    }, undefined>, never>;
-    readonly rng: v.OptionalSchema<v.SchemaWithPipe<[v.InstanceSchema<FunctionConstructor, undefined>, v.TransformAction<Function, (arg?: number) => Uint8Array>]>, never>;
-}, undefined>, never>;
+        readonly pubKeyHash: v.SchemaWithPipe<readonly [v.NumberSchema<undefined>, v.IntegerAction<number, undefined>, v.MinValueAction<number, 0, undefined>, v.MaxValueAction<number, 255, undefined>]>;
+        readonly scriptHash: v.SchemaWithPipe<readonly [v.NumberSchema<undefined>, v.IntegerAction<number, undefined>, v.MinValueAction<number, 0, undefined>, v.MaxValueAction<number, 255, undefined>]>;
+        readonly wif: v.SchemaWithPipe<readonly [v.NumberSchema<undefined>, v.IntegerAction<number, undefined>, v.MinValueAction<number, 0, undefined>, v.MaxValueAction<number, 255, undefined>]>;
+    }, undefined>, undefined>;
+    readonly rng: v.OptionalSchema<v.SchemaWithPipe<readonly [v.InstanceSchema<FunctionConstructor, undefined>, v.TransformAction<Function, (arg?: number) => Uint8Array>]>, undefined>;
+}, undefined>, undefined>;
 type ECPairOptions = v.InferOutput<typeof ECPairOptionsSchema>;
 export interface Signer {
     publicKey: Uint8Array;
