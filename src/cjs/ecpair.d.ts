@@ -1,5 +1,5 @@
-import { Network } from './networks';
-import * as networks from './networks';
+import { Network } from './networks.js';
+import * as networks from './networks.js';
 export { networks };
 import * as v from 'valibot';
 declare const ECPairOptionsSchema: v.OptionalSchema<v.ObjectSchema<{

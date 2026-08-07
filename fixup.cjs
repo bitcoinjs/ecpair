@@ -24,7 +24,7 @@ const processFiles = (dir) => {
       processFiles(filePath);
     } else if (filePath.endsWith('.cjs')) {
       updateRequires(filePath);
-    } else if (filePath.endsWith('.js')) {
+    } else if (filePath.endsWith('.js') || filePath.endsWith('.d.ts')) {
       updateImports(filePath);
     }
   });
